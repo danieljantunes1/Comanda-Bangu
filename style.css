@@ -42,9 +42,8 @@ body.dark-mode {
     align-items: center;
     gap: 15px;
     padding: 20px;
-    width: calc(100% - 290px);
-    margin-left: 290px;
-    margin-top: 50px;
+    width: calc(100% - 340px);
+    margin: 50px 0 0 340px;
 }
 
 .title {
@@ -193,16 +192,15 @@ body.dark-mode {
 }
 
 .container {
-    width: calc(100% - 290px);
+    width: calc(100% - 340px);
     max-width: 1920px;
-    margin: 100px auto 20px;
-    margin-left: 290px;
+    margin: 100px 0 20px 340px;
     display: flex;
     flex-direction: column;
     gap: 30px;
     flex-grow: 1;
-    padding-bottom: 50px;
-    padding-left: 30px;
+    padding: 0 30px;
+    box-sizing: border-box;
 }
 
 .tab-content {
@@ -221,7 +219,6 @@ body.dark-mode {
     gap: 30px;
     flex-wrap: wrap;
     width: 100%;
-    max-width: 1920px;
     margin-bottom: 30px;
 }
 
@@ -820,6 +817,7 @@ input[type="number"] {
     .header, .container {
         width: 100%;
         margin-left: 0;
+        margin-right: 0;
         padding: 10px;
     }
     .header {
@@ -838,6 +836,7 @@ input[type="number"] {
         margin-top: 20px;
         padding-bottom: 20px;
         padding-left: 10px;
+        padding-right: 10px;
     }
     .row {
         gap: 15px;
@@ -921,13 +920,16 @@ input[type="number"] {
 
 /* Telas de notebook (1280px a 1439px) */
 @media (min-width: 1280px) and (max-width: 1439px) {
+    .sidebar {
+        width: 220px;
+    }
     .container, .header {
-        width: calc(100% - 300px);
-        margin-left: 240px;
-        margin-right: auto;
+        width: calc(100% - 270px);
+        max-width: 1200px;
+        margin-left: 270px;
+        margin-right: 0;
         padding-left: 30px;
         padding-right: 30px;
-        max-width: 1200px;
     }
     .row {
         gap: 30px;
@@ -942,9 +944,6 @@ input[type="number"] {
     .comanda.expanded {
         height: 900px;
     }
-    .sidebar {
-        width: 220px;
-    }
     .title {
         font-size: 42px;
     }
@@ -958,13 +957,16 @@ input[type="number"] {
 
 /* Telas de PC (1440px a 1919px) */
 @media (min-width: 1440px) and (max-width: 1919px) {
+    .sidebar {
+        width: 240px;
+    }
     .container, .header {
-        width: calc(100% - 320px);
-        margin-left: 260px;
-        margin-right: auto;
+        width: calc(100% - 290px);
+        max-width: 1400px;
+        margin-left: 290px;
+        margin-right: 0;
         padding-left: 30px;
         padding-right: 30px;
-        max-width: 1400px;
     }
     .row {
         gap: 30px;
@@ -979,9 +981,6 @@ input[type="number"] {
     .comanda.expanded {
         height: 950px;
     }
-    .sidebar {
-        width: 240px;
-    }
     .title {
         font-size: 48px;
     }
@@ -995,13 +994,17 @@ input[type="number"] {
     :root {
         --base-font-size: 18px;
     }
+    .sidebar {
+        width: 280px;
+        padding: 30px;
+    }
     .container, .header {
-        width: calc(100% - 360px);
-        margin-left: 300px;
-        margin-right: auto;
+        width: calc(100% - 330px);
+        max-width: 1800px;
+        margin-left: 330px;
+        margin-right: 0;
         padding-left: 30px;
         padding-right: 30px;
-        max-width: 1800px;
     }
     .row {
         gap: 30px;
@@ -1015,10 +1018,6 @@ input[type="number"] {
     }
     .comanda.expanded {
         height: 1100px;
-    }
-    .sidebar {
-        width: 280px;
-        padding: 30px;
     }
     .sidebar-top, .sidebar-bottom {
         gap: 20px;
@@ -1056,13 +1055,17 @@ input[type="number"] {
     :root {
         --base-font-size: 20px;
     }
+    .sidebar {
+        width: 320px;
+        padding: 35px;
+    }
     .container, .header {
-        width: calc(100% - 410px);
-        margin-left: 350px;
-        margin-right: auto;
+        width: calc(100% - 370px);
+        max-width: 2400px;
+        margin-left: 370px;
+        margin-right: 0;
         padding-left: 30px;
         padding-right: 30px;
-        max-width: 2400px;
     }
     .row {
         gap: 30px;
@@ -1076,10 +1079,6 @@ input[type="number"] {
     }
     .comanda.expanded {
         height: 1200px;
-    }
-    .sidebar {
-        width: 320px;
-        padding: 35px;
     }
     .title {
         font-size: 72px;
