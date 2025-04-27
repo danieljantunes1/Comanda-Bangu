@@ -201,6 +201,8 @@ body.dark-mode {
     gap: 30px;
     flex-grow: 1;
     padding-bottom: 50px;
+    /* Adicionado para evitar sobreposição com a sidebar */
+    padding-left: 20px;
 }
 
 .tab-content {
@@ -221,6 +223,8 @@ body.dark-mode {
     width: 100%;
     max-width: 1920px;
     margin-bottom: 30px;
+    /* Adicionado para garantir que a linha comece após a sidebar */
+    margin-left: 10px;
 }
 
 .row:last-child {
@@ -601,7 +605,196 @@ input[type="number"] {
 .close-btn {
     background: none;
     border: none;
- Sidebar expansível em telas pequenas */
+    font-size: 28px;
+    cursor: pointer;
+    color: #d32f2f;
+    transition: transform 0.2s;
+    min-width: 44px;
+    min-height: 44px;
+    touch-action: manipulation;
+}
+
+.close-btn:hover {
+    color: #b71c1c;
+    transform: scale(1.1);
+}
+
+.popup-content {
+    margin-top: 10px;
+}
+
+.popup-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px var(--shadow-color);
+}
+
+.popup-table th, .popup-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text);
+}
+
+.popup-table th {
+    background: #d32f2f;
+    color: white;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+}
+
+.popup-table tr:last-child td {
+    border-bottom: none;
+}
+
+.popup-table tr:nth-child(even) {
+    background: #f4f4f4;
+}
+
+.popup-total {
+    font-family: 'Poppins', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: #d32f2f;
+    text-align: right;
+    padding: 15px 0;
+    border-top: 2px solid var(--border-color);
+    margin-top: 10px;
+}
+
+.share-btn {
+    background: linear-gradient(135deg, #25D366, #128C7E);
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    box-shadow: 0 2px 5px var(--shadow-color);
+    transition: transform 0.2s, box-shadow 0.2s;
+    align-self: flex-end;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    min-width: 44px;
+    min-height: 44px;
+    touch-action: manipulation;
+}
+
+.share-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.share-btn:active {
+    transform: scale(0.95);
+}
+
+.share-btn i {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    background: var(--comanda-bg);
+    border-radius: 12px;
+    box-shadow: 0 3px 15px var(--shadow-color);
+    padding: 15px;
+}
+
+.history-table th, .history-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text);
+}
+
+.history-table th {
+    background: #fafafa;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Media Queries */
+
+/* Telas muito pequenas (abaixo de 360px) */
+@media (max-width: 360px) {
+    body {
+        font-size: 12px;
+    }
+    .title {
+        font-size: 24px;
+    }
+    .logo {
+        width: 35px;
+    }
+    .sidebar {
+        padding: 10px;
+    }
+    .clock {
+        font-size: 24px;
+    }
+    .search-bar {
+        font-size: 12px;
+        padding: 8px;
+    }
+    .comanda {
+        padding: 10px;
+    }
+    .comanda-header {
+        padding: 8px;
+    }
+    .comanda-header label {
+        font-size: 16px;
+    }
+    .comanda-header input {
+        font-size: 12px;
+    }
+    table {
+        font-size: 11px;
+    }
+    .total {
+        font-size: 12px;
+    }
+    .expand-btn, .popup-btn, .share-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 0.7rem;
+    }
+    .popup {
+        padding: 10px;
+    }
+    .popup-header {
+        font-size: 16px;
+    }
+    .popup-table {
+        font-size: 10px;
+    }
+    .popup-total {
+        font-size: 12px;
+    }
+}
+
+/* Telas pequenas (600px e abaixo) */
 @media (max-width: 600px) {
     body {
         font-size: 14px;
@@ -657,10 +850,12 @@ input[type="number"] {
     .container {
         margin-top: 20px;
         padding-bottom: 20px;
+        padding-left: 10px; /* Ajustado para telas pequenas */
     }
     .row {
         gap: 15px;
         margin-bottom: 15px;
+        margin-left: 0; /* Removido para evitar deslocamento */
     }
     .comanda {
         width: 100%;
@@ -737,61 +932,70 @@ input[type="number"] {
     }
 }
 
-/* Telas muito pequenas (abaixo de 360px) */
-@media (max-width: 360px) {
-    body {
-        font-size: 12px;
+/* Telas de notebook (1280px) */
+@media (max-width: 1280px) {
+    .comanda {
+        /* Alterado para 4 comandas por linha: (100% - 3 * 20px gap) / 4 */
+        width: calc(25% - 15px);
+        min-width: 250px;
+        max-width: 320px;
+        height: 550px;
     }
-    .title {
-        font-size: 24px;
+    .comanda.expanded {
+        height: 900px;
     }
-    .logo {
-        width: 35px;
+    .container, .header {
+        width: calc(100% - 240px);
+        margin-left: 240px;
+        padding-left: 20px; /* Garante espaço à esquerda para evitar sobreposição */
+    }
+    .row {
+        gap: 20px; /* Ajustado para manter espaçamento consistente */
+        margin-left: 10px; /* Pequeno deslocamento para alinhamento */
     }
     .sidebar {
-        padding: 10px;
+        width: 220px;
     }
-    .clock {
-        font-size: 24px;
+    .title {
+        font-size: 42px;
     }
-    .search-bar {
-        font-size: 12px;
-        padding: 8px;
-    }
-    .comanda {
-        padding: 10px;
-    }
-    .comanda-header {
-        padding: 8px;
-    }
-    .comanda-header label {
-        font-size: 16px;
+    .logo {
+        width: 55px;
     }
     .comanda-header input {
-        font-size: 12px;
+        max-width: 150px;
     }
-    table {
-        font-size: 11px;
+}
+
+/* Telas de notebook (1440px) */
+@media (max-width: 1440px) {
+    .comanda {
+        /* Mantido para 4 comandas por linha: (100% - 3 * 20px gap) / 4 */
+        width: calc(25% - 15px);
+        min-width: 280px;
+        max-width: 350px;
+        height: 580px;
     }
-    .total {
-        font-size: 12px;
+    .comanda.expanded {
+        height: 950px;
     }
-    .expand-btn, .popup-btn, .share-btn {
-        width: 28px;
-        height: 28px;
-        font-size: 0.7rem;
+    .container, .header {
+        width: calc(100% - 260px);
+        margin-left: 260px;
+        padding-left: 20px; /* Garante espaço à esquerda para evitar sobreposição */
     }
-    .popup {
-        padding: 10px;
+    .row {
+        gap: 20px; /* Ajustado para manter espaçamento consistente */
+        margin-left: 10px; /* Pequeno deslocamento para alinhamento */
     }
-    .popup-header {
-        font-size: 16px;
+    .sidebar {
+        width: 240px;
     }
-    .popup-table {
-        font-size: 10px;
+    .title {
+        font-size: 48px;
     }
-    .popup-total {
-        font-size: 12px;
+    .logo {
+        width: 60px;
     }
 }
 
@@ -804,6 +1008,10 @@ input[type="number"] {
         width: calc(100% - 300px);
         margin-left: 300px;
         max-width: 2200px;
+        padding-left: 20px;
+    }
+    .row {
+        margin-left: 10px;
     }
     .sidebar {
         width: 280px;
@@ -855,9 +1063,13 @@ input[type="number"] {
         --base-font-size: 20px;
     }
     .container, .header {
-        width: calc(100% - 350px);
+        width: calc(67% - 350px);
         margin-left: 350px;
         max-width: 3000px;
+        padding-left: 20px;
+    }
+    .row {
+        margin-left: 10px;
     }
     .sidebar {
         width: 320px;
@@ -906,16 +1118,5 @@ input[type="number"] {
     }
     .popup-total {
         font-size: 22px;
-    }
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
     }
 }
