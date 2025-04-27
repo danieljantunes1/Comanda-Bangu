@@ -195,14 +195,14 @@ body.dark-mode {
 .container {
     width: calc(100% - 290px);
     max-width: 1920px;
-    margin: 100px 0 20px 290px;
+    margin: 100px auto 20px;
+    margin-left: 290px;
     display: flex;
     flex-direction: column;
     gap: 30px;
-    flex-grow: 1;
+    flex-grow: 1 ROTATE
     padding-bottom: 50px;
-    /* Adicionado para evitar sobreposição com a sidebar */
-    padding-left: 20px;
+    padding-left: 30px;
 }
 
 .tab-content {
@@ -217,14 +217,12 @@ body.dark-mode {
 
 .row {
     display: flex;
-    justify-content: flex-start;
-    gap: 20px;
+    justify-content: center;
+    gap: 30px;
     flex-wrap: wrap;
     width: 100%;
     max-width: 1920px;
     margin-bottom: 30px;
-    /* Adicionado para garantir que a linha comece após a sidebar */
-    margin-left: 10px;
 }
 
 .row:last-child {
@@ -236,9 +234,9 @@ body.dark-mode {
     padding: 25px;
     border-radius: 12px;
     box-shadow: 0 3px 15px var(--shadow-color);
-    width: calc(25% - 20px);
-    max-width: 600px;
-    min-width: 300px;
+    width: calc(25% - 22.5px);
+    max-width: 450px;
+    min-width: 280px;
     height: 600px;
     transition: background-color 0.3s, transform 0.2s, height 0.3s ease;
     opacity: 0;
@@ -632,7 +630,7 @@ input[type="number"] {
     box-shadow: 0 2px 10px var(--shadow-color);
 }
 
-.popup-table th, .popup-table td {
+.popup_popup-table th, .popup-table td {
     padding: 12px;
     text-align: left;
     border-bottom: 1px solid var(--border-color);
@@ -721,17 +719,6 @@ input[type="number"] {
     background: #fafafa;
     font-weight: 400;
     letter-spacing: 0.05em;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
 /* Media Queries */
@@ -850,12 +837,12 @@ input[type="number"] {
     .container {
         margin-top: 20px;
         padding-bottom: 20px;
-        padding-left: 10px; /* Ajustado para telas pequenas */
+        padding-left: 10px;
     }
     .row {
         gap: 15px;
         margin-bottom: 15px;
-        margin-left: 0; /* Removido para evitar deslocamento */
+        justify-content: flex-start;
     }
     .comanda {
         width: 100%;
@@ -932,26 +919,28 @@ input[type="number"] {
     }
 }
 
-/* Telas de notebook (1280px) */
-@media (max-width: 1280px) {
+/* Telas de notebook (1280px a 1439px) */
+@media (min-width: 1280px) and (max-width: 1439px) {
+    .container, .header {
+        width: calc(100% - 300px);
+        margin-left: 240px;
+        margin-right: auto;
+        padding-left: 30px;
+        padding-right: 30px;
+        max-width: 1200px;
+    }
+    .row {
+        gap: 30px;
+        justify-content: center;
+    }
     .comanda {
-        /* Alterado para 4 comandas por linha: (100% - 3 * 20px gap) / 4 */
-        width: calc(25% - 15px);
-        min-width: 250px;
+        width: calc(25% - 22.5px);
+        min-width: 260px;
         max-width: 320px;
         height: 550px;
     }
     .comanda.expanded {
         height: 900px;
-    }
-    .container, .header {
-        width: calc(100% - 240px);
-        margin-left: 240px;
-        padding-left: 20px; /* Garante espaço à esquerda para evitar sobreposição */
-    }
-    .row {
-        gap: 20px; /* Ajustado para manter espaçamento consistente */
-        margin-left: 10px; /* Pequeno deslocamento para alinhamento */
     }
     .sidebar {
         width: 220px;
@@ -967,26 +956,28 @@ input[type="number"] {
     }
 }
 
-/* Telas de notebook (1440px) */
-@media (max-width: 1440px) {
+/* Telas de PC (1440px a 1919px) */
+@media (min-width: 1440px) and (max-width: 1919px) {
+    .container, .header {
+        width: calc(100% - 320px);
+        margin-left: 260px;
+        margin-right: auto;
+        padding-left: 30px;
+        padding-right: 30px;
+        max-width: 1400px;
+    }
+    .row {
+        gap: 30px;
+        justify-content: center;
+    }
     .comanda {
-        /* Mantido para 4 comandas por linha: (100% - 3 * 20px gap) / 4 */
-        width: calc(25% - 15px);
+        width: calc(25% - 22.5px);
         min-width: 280px;
         max-width: 350px;
         height: 580px;
     }
     .comanda.expanded {
         height: 950px;
-    }
-    .container, .header {
-        width: calc(100% - 260px);
-        margin-left: 260px;
-        padding-left: 20px; /* Garante espaço à esquerda para evitar sobreposição */
-    }
-    .row {
-        gap: 20px; /* Ajustado para manter espaçamento consistente */
-        margin-left: 10px; /* Pequeno deslocamento para alinhamento */
     }
     .sidebar {
         width: 240px;
@@ -999,19 +990,31 @@ input[type="number"] {
     }
 }
 
-/* Telas grandes (1920px a 2560px) */
-@media (min-width: 1920px) {
+/* Telas grandes - TVs (1920px a 2559px) */
+@media (min-width: 1920px) and (max-width: 2559px) {
     :root {
         --base-font-size: 18px;
     }
     .container, .header {
-        width: calc(100% - 300px);
+        width: calc(100% - 360px);
         margin-left: 300px;
-        max-width: 2200px;
-        padding-left: 20px;
+        margin-right: auto;
+        padding-left: 30px;
+        padding-right: 30px;
+        max-width: 1800px;
     }
     .row {
-        margin-left: 10px;
+        gap: 30px;
+        justify-content: center;
+    }
+    .comanda {
+        width: calc(25% - 22.5px);
+        min-width: 320px;
+        max-width: 400px;
+        height: 650px;
+    }
+    .comanda.expanded {
+        height: 1100px;
     }
     .sidebar {
         width: 280px;
@@ -1025,15 +1028,6 @@ input[type="number"] {
     }
     .logo {
         width: 70px;
-    }
-    .comanda {
-        width: calc(25% - 20px);
-        min-width: 350px;
-        max-width: 650px;
-        height: 650px;
-    }
-    .comanda.expanded {
-        height: 1100px;
     }
     .comanda-header {
         font-size: 24px;
@@ -1057,19 +1051,31 @@ input[type="number"] {
     }
 }
 
-/* Telas 4K (acima de 2560px) */
+/* Telas 4K - TVs (2560px e acima) */
 @media (min-width: 2560px) {
     :root {
         --base-font-size: 20px;
     }
     .container, .header {
-        width: calc(67% - 350px);
+        width: calc(100% - 410px);
         margin-left: 350px;
-        max-width: 3000px;
-        padding-left: 20px;
+        margin-right: auto;
+        padding-left: 30px;
+        padding-right: 30px;
+        max-width: 2400px;
     }
     .row {
-        margin-left: 10px;
+        gap: 30px;
+        justify-content: center;
+    }
+    .comanda {
+        width: calc(25% - 22.5px);
+        min-width: 360px;
+        max-width: 450px;
+        height: 700px;
+    }
+    .comanda.expanded {
+        height: 1200px;
     }
     .sidebar {
         width: 320px;
@@ -1080,15 +1086,6 @@ input[type="number"] {
     }
     .logo {
         width: 80px;
-    }
-    .comanda {
-        width: calc(20% - 20px);
-        min-width: 400px;
-        max-width: 700px;
-        height: 700px;
-    }
-    .comanda.expanded {
-        height: 1200px;
     }
     .comanda-header {
         font-size: 26px;
@@ -1118,5 +1115,16 @@ input[type="number"] {
     }
     .popup-total {
         font-size: 22px;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
