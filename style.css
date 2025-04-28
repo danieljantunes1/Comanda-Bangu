@@ -331,15 +331,16 @@ body.dark-mode {
 }
 
 .comanda-header input {
-    padding: 8px;
+    padding: 6px;
     border: 1px solid var(--border-color);
     border-radius: 6px;
     font-size: 16px;
     background: var(--input-bg);
     color: var(--text);
     width: 100%;
-    max-width: 200px;
+    max-width: 150px;
     flex-shrink: 0;
+    box-sizing: border-box;
 }
 
 .socio-checkbox {
@@ -357,26 +358,26 @@ body.dark-mode {
 }
 
 .remove-btn {
-    background: #ff0000;
+    background: #e57373;
     color: white;
     border: none;
     border-radius: 50%;
-    width: 22px;
-    height: 22px;
+    width: 18px;
+    height: 18px;
     cursor: pointer;
-    font-size: 12px;
-    line-height: 22px;
-    box-shadow: 0 2px 5px var(--shadow-color);
-    transition: transform 0.2s;
+    font-size: 10px;
+    line-height: 18px;
+    box-shadow: 0 1px 3px var(--shadow-color);
+    transition: transform 0.2s, background 0.2s;
     display: inline-block;
-    min-width: 44px;
-    min-height: 44px;
+    min-width: 36px;
+    min-height: 36px;
     touch-action: manipulation;
 }
 
 .remove-btn:hover {
     transform: scale(1.1);
-    background: #ff3333;
+    background: #ef5350;
 }
 
 table {
@@ -752,6 +753,8 @@ input[type="number"] {
     }
     .comanda-header input {
         font-size: 12px;
+        max-width: 100%;
+        padding: 4px;
     }
     table {
         font-size: 11px;
@@ -763,6 +766,14 @@ input[type="number"] {
         width: 28px;
         height: 28px;
         font-size: 0.7rem;
+    }
+    .remove-btn {
+        width: 16px;
+        height: 16px;
+        font-size: 8px;
+        line-height: 16px;
+        min-width: 32px;
+        min-height: 32px;
     }
     .popup {
         padding: 10px;
@@ -865,6 +876,7 @@ input[type="number"] {
         width: 100%;
         max-width: 100%;
         font-size: 14px;
+        padding: 5px;
     }
     .comanda-header label {
         font-size: 18px;
@@ -890,9 +902,12 @@ input[type="number"] {
         font-size: 0.8rem;
     }
     .remove-btn {
-        width: 18px;
-        height: 18px;
-        font-size: 10px;
+        width: 16px;
+        height: 16px;
+        font-size: 8px;
+        line-height: 16px;
+        min-width: 32px;
+        min-height: 32px;
     }
     .popup {
         width: 95%;
@@ -951,7 +966,7 @@ input[type="number"] {
         width: 55px;
     }
     .comanda-header input {
-        max-width: 150px;
+        max-width: 120px;
     }
 }
 
@@ -986,6 +1001,9 @@ input[type="number"] {
     }
     .logo {
         width: 60px;
+    }
+    .comanda-header input {
+        max-width: 130px;
     }
 }
 
@@ -1032,7 +1050,7 @@ input[type="number"] {
         font-size: 24px;
     }
     .comanda-header input {
-        max-width: 250px;
+        max-width: 140px;
         font-size: 18px;
     }
     table {
@@ -1090,7 +1108,7 @@ input[type="number"] {
         font-size: 26px;
     }
     .comanda-header input {
-        max-width: 300px;
+        max-width: 150px;
         font-size: 20px;
     }
     table {
