@@ -43,15 +43,21 @@ body.dark-mode {
     gap: 15px;
     padding: 20px;
     width: calc(100% - 340px);
-    margin: 50px 0 0 340px;
+    margin: 15px 0 0 240px;
+}
+
+.header img {
+    width:100px;
+    height: 130px;
 }
 
 .title {
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
-    font-size: 54px;
+    font-size: 64px;
     color: #fff;
     letter-spacing: 0.05em;
+    margin: -5px 0 0 100px;
 }
 
 .logo {
@@ -83,12 +89,6 @@ body.dark-mode {
     gap: 25px;
 }
 
-.sidebar-bottom {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
 .clock {
     font-size: 40px;
     font-family: 'Montserrat', sans-serif;
@@ -96,36 +96,19 @@ body.dark-mode {
     color: var(--text);
     text-align: center;
     letter-spacing: 0.15em;
-}
-
-.search-bar {
-    padding: 10px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    font-size: 14px;
-    width: 100%;
-    background: var(--input-bg);
-    color: var(--text);
-    transition: border-color 0.3s;
-}
-
-.search-bar:focus {
-    border-color: #888;
-    outline: none;
+    margin-top: 50px;
 }
 
 .total-debt {
-    font-size: 16px;
+    font-size: 26px;
     font-weight: 700;
-    color: #d32f2f;
-    background: #f5f5f5;
+    color: #852b2b;
     padding: 8px 12px;
-    border-radius: 8px;
     text-align: center;
 }
 
-#addComanda {
-    background: linear-gradient(135deg, #d32f2f, #b71c1c);
+#addComanda, #adminBtn {
+    background: linear-gradient(135deg, #a04646);
     border: none;
     color: white;
     padding: 15px 30px;
@@ -140,30 +123,15 @@ body.dark-mode {
     touch-action: manipulation;
 }
 
-#addComanda:hover {
+#addComanda {
+    margin-top: 70px;
+}
+
+
+
+#addComanda:hover, #adminBtn:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-}
-
-#addProduto, #deleteProduto {
-    background: none;
-    border: 1px solid #d32f2f;
-    color: #d32f2f;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 400;
-    transition: background-color 0.3s, color 0.3s, transform 0.2s;
-    min-width: 44px;
-    min-height: 44px;
-    touch-action: manipulation;
-}
-
-#addProduto:hover, #deleteProduto:hover {
-    background: #d32f2f;
-    color: white;
-    transform: translateY(-2px);
 }
 
 .nav-btn {
@@ -189,6 +157,23 @@ body.dark-mode {
 .nav-btn.active {
     font-weight: 700;
     text-decoration: underline;
+}
+
+#toggleTheme {
+    background: linear-gradient(135deg, #d32f2f, #b71c1c);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 400;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 5px var(--shadow-color);
+}
+
+#toggleTheme:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 .container {
@@ -437,6 +422,30 @@ tr.item:nth-child(odd) {
     display: none;
 }
 
+.cash-input-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 10px;
+    padding: 5px;
+}
+
+.cash-input-container label {
+    font-size: 14px;
+    color: var(--text);
+}
+
+.cash-input-container input {
+    width: 80px;
+    padding: 6px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 14px;
+    background: var(--input-bg);
+    color: var(--text);
+}
+
 .footer {
     display: flex;
     justify-content: space-between;
@@ -565,20 +574,33 @@ input[type="number"] {
 
 .popup {
     background: var(--comanda-bg);
-    padding: 30px;
+    padding: 20px;
     border-radius: 15px;
     box-shadow: 0 5px 25px var(--shadow-color);
-    width: 650px;
+    width: 500px;
+    max-width: 90vw;
     max-height: 80vh;
     overflow-y: auto;
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 15px;
     transform: scale(0.95);
     opacity: 0;
     transition: transform 0.2s ease, opacity 0.2s ease;
     border: 1px solid var(--border-color);
+    animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .popup-overlay.active .popup {
@@ -588,22 +610,63 @@ input[type="number"] {
 
 .popup-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
     font-family: 'Poppins', sans-serif;
-    font-size: 26px;
+    font-size: 24px;
     font-weight: 600;
+    color: white;
+    padding: 12px 15px;
+    background: linear-gradient(135deg, #a04646);
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.popup-header span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.popup-header .name-container {
+    position: relative;
+    max-width: 220px;
+    flex-grow: 1;
+    margin-left: 20px;
+}
+
+.popup-header input[type="text"] {
+    padding: 8px 8px 8px 30px;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    font-size: 14px;
+    background: var(--input-bg);
     color: var(--text);
-    padding-bottom: 10px;
-    border-bottom: 2px solid #d32f2f;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border 0.3s, box-shadow 0.3s;
+    border-image: linear-gradient(to right, #ffffff, transparent) 1;
+}
+
+.popup-header .name-container::before {
+    content: '\f007';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #d32f2f;
+    font-size: 14px;
 }
 
 .close-btn {
     background: none;
     border: none;
-    font-size: 28px;
+    font-size: 24px;
     cursor: pointer;
-    color: #d32f2f;
+    color: white;
     transition: transform 0.2s;
     min-width: 44px;
     min-height: 44px;
@@ -611,36 +674,30 @@ input[type="number"] {
 }
 
 .close-btn:hover {
-    color: #b71c1c;
     transform: scale(1.1);
 }
 
 .popup-content {
-    margin-top: 10px;
+    margin-top: 8px;
 }
 
 .popup-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 15px;
+    font-size: 14px;
     background: #f9f9f9;
     border-radius: 8px;
     box-shadow: 0 2px 10px var(--shadow-color);
 }
 
 .popup-table th, .popup-table td {
-    padding: 12px;
+    padding: 10px;
     text-align: left;
     border-bottom: 1px solid var(--border-color);
     color: var(--text);
 }
 
-.popup-table th {
-    background: #d32f2f;
-    color: white;
-    font-weight: 500;
-    letter-spacing: 0.05em;
-}
+
 
 .popup-table tr:last-child td {
     border-bottom: none;
@@ -652,20 +709,24 @@ input[type="number"] {
 
 .popup-total {
     font-family: 'Poppins', sans-serif;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 600;
-    color: #d32f2f;
+    color: var(--text);
     text-align: right;
-    padding: 15px 0;
+    padding: 12px 0;
     border-top: 2px solid var(--border-color);
-    margin-top: 10px;
+    margin-top: 8px;
+    background: linear-gradient(135deg, #ffebee, #ffcdd2);
+    border-radius: 8px;
+    box-shadow: 0 3px 8px var(--shadow-color);
+    display: block;
 }
 
 .share-btn {
     background: linear-gradient(135deg, #25D366, #128C7E);
     color: white;
     border: none;
-    padding: 10px;
+    padding: 8px;
     border-radius: 6px;
     cursor: pointer;
     font-size: 1rem;
@@ -675,8 +736,8 @@ input[type="number"] {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     min-width: 44px;
     min-height: 44px;
     touch-action: manipulation;
@@ -694,6 +755,204 @@ input[type="number"] {
 .share-btn i {
     margin: 0;
     font-size: 1rem;
+}
+
+.popup-add-comanda {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+}
+
+.popup-add-comanda table {
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    background: var(--comanda-bg);
+    border-radius: 10px;
+    box-shadow: 0 4px 12px var(--shadow-color);
+    max-height: 280px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #d32f2f var(--background);
+}
+
+.popup-add-comanda table::-webkit-scrollbar {
+    width: 6px;
+}
+
+.popup-add-comanda table::-webkit-scrollbar-track {
+    background: var(--background);
+}
+
+.popup-add-comanda table::-webkit-scrollbar-thumb {
+    background: #d32f2f;
+    border-radius: 3px;
+}
+
+.popup-add-comanda tr:nth-child(odd) {
+    background: var(--input-bg);
+}
+
+.popup-add-comanda th,
+.popup-add-comanda td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text);
+}
+
+.popup-add-comanda th {
+    background: linear-gradient(135deg, #a04646);
+    color: white;
+    font-weight: 700;
+    position: sticky;
+    top: 0;
+}
+
+.popup-add-comanda td:first-child {
+    width: 70%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+}
+
+.popup-add-comanda td:nth-child(2) {
+    width: 30%;
+    text-align: center;
+}
+
+.popup-add-comanda td:first-child::before {
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    margin-right: 8px;
+    color: #d32f2f;
+    font-size: 16px;
+    transition: transform 0.2s;
+}
+
+.popup-add-comanda td:first-child:hover::before {
+    transform: scale(1.2);
+}
+
+.popup-add-comanda td:first-child:nth-child(1):nth-of-type(1)::before { content: '\f0fc'; }
+.popup-add-comanda td:first-child:nth-child(1):nth-of-type(2)::before { content: '\f0fc'; }
+.popup-add-comanda td:first-child:nth-child(1):nth-of-type(3)::before { content: '\f0fc'; }
+.popup-add-comanda td:first-child:nth-child(1):nth-of-type(4)::before { content: '\f4c0'; }
+.popup-add-comanda td:first-child:nth-child(1):nth-of-type(5)::before { content: '\f2e9'; }
+.popup-add-comanda td:first-child:nth-child(1):nth-of-type(6)::before { content: '\f2e9'; }
+.popup-add-comanda td:first-child:nth-child(1):nth-of-type(7)::before { content: '\f2e9'; }
+.popup-add-comanda td:first-child:nth-child(1):nth-of-type(8)::before { content: '\f0f5'; }
+.popup-add-comanda td:first-child:nth-child(1):nth-of-type(9)::before { content: '\f805'; }
+
+.popup-add-comanda input[type="number"] {
+    width: 60px;
+    padding: 8px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 14px;
+    background: var(--input-bg);
+    color: var(--text);
+    transition: border-color 0.2s;
+}
+
+.popup-add-comanda input[type="number"]:focus {
+    border-color: #d32f2f;
+    outline: none;
+}
+
+.popup-add-comanda .total {
+    display: none;
+}
+
+.popup-add-comanda .buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.popup-add-comanda .submit-btn,
+.popup-add-comanda .cancel-btn {
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    min-width: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.popup-add-comanda .submit-btn {
+    background: linear-gradient(135deg, #d32f2f, #b71c1c);
+    border: none;
+    color: white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.popup-add-comanda .submit-btn::before {
+    content: '\f00c';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    font-size: 16px;
+}
+
+.popup-add-comanda .submit-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    animation: pulse 1.5s infinite;
+}
+
+.popup-add-comanda .submit-btn:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+    box-shadow: none;
+    opacity: 0.7;
+    color: #666;
+}
+
+.popup-add-comanda .cancel-btn {
+    background: none;
+    border: 2px solid #d32f2f;
+    color: #d32f2f;
+}
+
+.popup-add-comanda .cancel-btn::before {
+    content: '\f00d';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    font-size: 16px;
+}
+
+.popup-add-comanda .cancel-btn:hover {
+    background: #d32f2f;
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    50% {
+        transform: scale(1.03);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
 }
 
 .history-table {
@@ -719,77 +978,6 @@ input[type="number"] {
     letter-spacing: 0.05em;
 }
 
-/* Media Queries */
-
-/* Telas muito pequenas (abaixo de 360px) */
-@media (max-width: 360px) {
-    body {
-        font-size: 12px;
-    }
-    .title {
-        font-size: 24px;
-    }
-    .logo {
-        width: 35px;
-    }
-    .sidebar {
-        padding: 10px;
-    }
-    .clock {
-        font-size: 24px;
-    }
-    .search-bar {
-        font-size: 12px;
-        padding: 8px;
-    }
-    .comanda {
-        padding: 10px;
-    }
-    .comanda-header {
-        padding: 8px;
-    }
-    .comanda-header label {
-        font-size: 16px;
-    }
-    .comanda-header input {
-        font-size: 12px;
-        max-width: 100%;
-        padding: 4px;
-    }
-    table {
-        font-size: 11px;
-    }
-    .total {
-        font-size: 12px;
-    }
-    .expand-btn, .popup-btn, .share-btn {
-        width: 28px;
-        height: 28px;
-        font-size: 0.7rem;
-    }
-    .remove-btn {
-        width: 16px;
-        height: 16px;
-        font-size: 8px;
-        line-height: 16px;
-        min-width: 32px;
-        min-height: 32px;
-    }
-    .popup {
-        padding: 10px;
-    }
-    .popup-header {
-        font-size: 16px;
-    }
-    .popup-table {
-        font-size: 10px;
-    }
-    .popup-total {
-        font-size: 12px;
-    }
-}
-
-/* Telas pequenas (600px e abaixo) */
 @media (max-width: 600px) {
     body {
         font-size: 14px;
@@ -915,7 +1103,22 @@ input[type="number"] {
         max-height: 90vh;
     }
     .popup-header {
-        font-size: 18px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .popup-header .name-container {
+        max-width: 100%;
+        margin-left: 0;
+    }
+    .popup-add-comanda .buttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .popup-add-comanda .submit-btn,
+    .popup-add-comanda .cancel-btn {
+        min-width: auto;
+        padding: 12px 20px;
     }
     .popup-table {
         font-size: 12px;
@@ -926,212 +1129,15 @@ input[type="number"] {
     .popup-total {
         font-size: 14px;
     }
-    .toast {
-        bottom: 10px;
-        padding: 8px 15px;
+    .popup-add-comanda table {
         font-size: 12px;
     }
-}
-
-/* Telas de notebook (1280px a 1439px) */
-@media (min-width: 1280px) and (max-width: 1439px) {
-    .sidebar {
-        width: 220px;
+    .popup-add-comanda th, .popup-add-comanda td {
+        padding: 8px;
     }
-    .container, .header {
-        width: calc(100% - 270px);
-        max-width: 1200px;
-        margin-left: 270px;
-        margin-right: 0;
-        padding-left: 30px;
-        padding-right: 30px;
-    }
-    .row {
-        gap: 30px;
-        justify-content: center;
-    }
-    .comanda {
-        width: calc(25% - 22.5px);
-        min-width: 260px;
-        max-width: 320px;
-        height: 550px;
-    }
-    .comanda.expanded {
-        height: 900px;
-    }
-    .title {
-        font-size: 42px;
-    }
-    .logo {
-        width: 55px;
-    }
-    .comanda-header input {
-        max-width: 120px;
-    }
-}
-
-/* Telas de PC (1440px a 1919px) */
-@media (min-width: 1440px) and (max-width: 1919px) {
-    .sidebar {
-        width: 240px;
-    }
-    .container, .header {
-        width: calc(100% - 290px);
-        max-width: 1400px;
-        margin-left: 290px;
-        margin-right: 0;
-        padding-left: 30px;
-        padding-right: 30px;
-    }
-    .row {
-        gap: 30px;
-        justify-content: center;
-    }
-    .comanda {
-        width: calc(25% - 22.5px);
-        min-width: 280px;
-        max-width: 350px;
-        height: 580px;
-    }
-    .comanda.expanded {
-        height: 950px;
-    }
-    .title {
-        font-size: 48px;
-    }
-    .logo {
-        width: 60px;
-    }
-    .comanda-header input {
-        max-width: 130px;
-    }
-}
-
-/* Telas grandes - TVs (1920px a 2559px) */
-@media (min-width: 1920px) and (max-width: 2559px) {
-    :root {
-        --base-font-size: 18px;
-    }
-    .sidebar {
-        width: 280px;
-        padding: 30px;
-    }
-    .container, .header {
-        width: calc(100% - 330px);
-        max-width: 1800px;
-        margin-left: 330px;
-        margin-right: 0;
-        padding-left: 30px;
-        padding-right: 30px;
-    }
-    .row {
-        gap: 30px;
-        justify-content: center;
-    }
-    .comanda {
-        width: calc(25% - 22.5px);
-        min-width: 320px;
-        max-width: 400px;
-        height: 650px;
-    }
-    .comanda.expanded {
-        height: 1100px;
-    }
-    .sidebar-top, .sidebar-bottom {
-        gap: 20px;
-    }
-    .title {
-        font-size: 60px;
-    }
-    .logo {
-        width: 70px;
-    }
-    .comanda-header {
-        font-size: 24px;
-    }
-    .comanda-header input {
-        max-width: 140px;
-        font-size: 18px;
-    }
-    table {
-        font-size: 18px;
-    }
-    .total {
-        font-size: 18px;
-    }
-    .clock {
-        font-size: 44px;
-    }
-    .search-bar {
-        font-size: 16px;
-        padding: 12px;
-    }
-}
-
-/* Telas 4K - TVs (2560px e acima) */
-@media (min-width: 2560px) {
-    :root {
-        --base-font-size: 20px;
-    }
-    .sidebar {
-        width: 320px;
-        padding: 35px;
-    }
-    .container, .header {
-        width: calc(100% - 370px);
-        max-width: 2400px;
-        margin-left: 370px;
-        margin-right: 0;
-        padding-left: 30px;
-        padding-right: 30px;
-    }
-    .row {
-        gap: 30px;
-        justify-content: center;
-    }
-    .comanda {
-        width: calc(25% - 22.5px);
-        min-width: 360px;
-        max-width: 450px;
-        height: 700px;
-    }
-    .comanda.expanded {
-        height: 1200px;
-    }
-    .title {
-        font-size: 72px;
-    }
-    .logo {
-        width: 80px;
-    }
-    .comanda-header {
-        font-size: 26px;
-    }
-    .comanda-header input {
-        max-width: 150px;
-        font-size: 20px;
-    }
-    table {
-        font-size: 20px;
-    }
-    .total {
-        font-size: 20px;
-    }
-    .clock {
-        font-size: 48px;
-    }
-    .popup {
-        width: 800px;
-        max-height: 85vh;
-    }
-    .popup-header {
-        font-size: 30px;
-    }
-    .popup-table {
-        font-size: 16px;
-    }
-    .popup-total {
-        font-size: 22px;
+    .popup-add-comanda input[type="number"] {
+        width: 50px;
+        padding: 6px;
     }
 }
 

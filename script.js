@@ -13,7 +13,6 @@ let produtos = JSON.parse(localStorage.getItem('produtos')) || [
 const DOM = {
     sidebar: document.getElementById('sidebar'),
     clock: document.getElementById('clock'),
-    searchBar: document.getElementById('searchBar'),
     totalDebt: document.getElementById('totalDebt'),
     addComanda: document.getElementById('addComanda'),
     addProduto: document.getElementById('addProduto'),
@@ -46,7 +45,7 @@ const showToast = (message) => {
 const updateTotalDebt = () => {
     const totalDebt = Array.from(document.querySelectorAll('.comanda .total'))
         .reduce((sum, el) => sum + (parseFloat(el.innerText.replace(/[^\d,.]/g, '').replace(',', '.')) || 0), 0);
-    DOM.totalDebt.innerText = `Total na rua: ${formatCurrency(totalDebt)}`;
+    DOM.totalDebt.innerText = `Total: ${formatCurrency(totalDebt)}`;
 };
 
 const debounce = (func, wait) => {
@@ -62,7 +61,6 @@ const atualizarTotal = debounce((comandaId) => {
     if (!comanda) return;
     const quantidades = comanda.querySelectorAll('.quantidade');
     const totais = comanda.querySelectorAll('.preco-total');
-    const items = comanda.querySelectorAll('.item');
     let total = 0;
 
     quantidades.forEach((input, i) => {
@@ -74,64 +72,71 @@ const atualizarTotal = debounce((comandaId) => {
         total += subtotal;
     });
 
+    const totalElement = document.getElementById(`total-${comandaId}`);
+    if (totalElement) {
+        totalElement.innerText = `Total: ${formatCurrency(total)}`;
+    }
+
+    // Atualizar o popup de detalhes, se aberto
+    if (DOM.popupOverlay.classList.contains('active') && DOM.popupTableBody.innerHTML) {
+        DOM.popupTotal.innerText = `Total: ${formatCurrency(total)}`;
+        DOM.popupTotal.style.display = 'block';
+    }
+
+    // Garantir que o botão de detalhes aparece se houver itens
+    const popupBtn = document.getElementById(`popupBtn-${comandaId}`);
+    if (popupBtn) {
+        popupBtn.classList.toggle('hidden', total === 0);
+    }
+
+    salvarComandas();
+    updateTotalDebt();
+
+    // Atualizar visibilidade dos itens com base no estado de expansão
     const isExpanded = comanda.classList.contains('expanded');
+    const items = comanda.querySelectorAll('.item');
     items.forEach((item, i) => {
         item.classList.toggle('hidden', !isExpanded && i >= 4);
     });
-
-    document.getElementById(`total-${comandaId}`).innerText = `Total: ${formatCurrency(total)}`;
-    if (DOM.popupOverlay.classList.contains('active')) {
-        DOM.popupTotal.innerText = `Total: ${formatCurrency(total)}`;
-    }
-    const popupBtn = document.getElementById(`popupBtn-${comandaId}`);
-    popupBtn.classList.toggle('hidden', total === 0);
-    salvarComandas();
-    updateTotalDebt();
 }, 300);
 
-// Nova função para atualizar o total no popup de adição
 const atualizarTotalPopup = () => {
     const quantidades = DOM.popupContent.querySelectorAll('.quantidade');
-    let total = 0;
-    quantidades.forEach((input, i) => {
-        const qty = Math.max(0, parseInt(input.value) || 0);
-        total += qty * produtos[i].preco;
-    });
-    DOM.popupTotal.innerText = `Total: ${formatCurrency(total)}`;
-
-    // Validar e habilitar/desabilitar o botão Enviar
-    const nameInput = DOM.popupContent.querySelector('.customer-name');
+    const nameInput = DOM.popup.querySelector('.customer-name');
     const submitBtn = DOM.popupContent.querySelector('.submit-btn');
-    const isNameFilled = nameInput.value.trim() !== '';
+    const isNameFilled = nameInput && nameInput.value.trim() !== '';
     const hasProducts = Array.from(quantidades).some(input => parseInt(input.value) > 0);
-    submitBtn.disabled = !(isNameFilled && hasProducts);
+    if (submitBtn) {
+        submitBtn.disabled = !(isNameFilled && hasProducts);
+    }
 };
 
 const toggleExpand = (comandaId) => {
     const comanda = document.getElementById(`comanda-${comandaId}`);
     if (!comanda) return;
     const expandBtn = document.getElementById(`expandBtn-${comandaId}`);
-    comanda.classList.toggle('expanded');
-    expandBtn.querySelector('i').className = comanda.classList.contains('expanded') ? 'fas fa-compress' : 'fas fa-expand';
+    if (!expandBtn) return;
+
+    const isExpanded = comanda.classList.toggle('expanded');
+    expandBtn.querySelector('i').className = isExpanded ? 'fas fa-compress' : 'fas fa-expand';
+
     const items = comanda.querySelectorAll('.item');
     items.forEach((item, i) => {
-        if (comanda.classList.contains('expanded')) {
-            item.classList.remove('hidden');
-        } else {
-            item.classList.toggle('hidden', i >= 4);
-        }
+        item.classList.toggle('hidden', !isExpanded && i >= 4);
     });
+
     atualizarTotal(comandaId);
 };
 
 const togglePopup = (comandaId) => {
     const comanda = document.getElementById(`comanda-${comandaId}`);
     if (!comanda) return;
-    const customerName = comanda.querySelector(`#customerName-${comandaId}`).value || 'Cliente';
+    const customerName = comanda.querySelector(`#customerName-${comandaId}`)?.value || 'Cliente';
     const quantidades = Array.from(comanda.querySelectorAll('.quantidade')).map(input => input.value);
 
     if (!DOM.popupOverlay.classList.contains('active')) {
-        DOM.popupTitle.innerText = `Detalhes da Comanda - ${customerName}`;
+        DOM.popup.classList.remove('popup-add-comanda');
+        DOM.popupTitle.innerHTML = `<i class="fas fa-file-alt"></i> Detalhes da Comanda - ${customerName}`;
         DOM.popupTableBody.innerHTML = produtos.map((p, i) => {
             const qty = parseInt(quantidades[i]) || 0;
             if (qty === 0) return '';
@@ -145,12 +150,16 @@ const togglePopup = (comandaId) => {
                 </tr>
             `;
         }).join('');
-        DOM.popupContent.innerHTML = ''; // Limpar conteúdo customizado
+        DOM.popupContent.innerHTML = '';
         DOM.popupOverlay.classList.add('active');
         atualizarTotal(comandaId);
 
+        // Garantir que o botão de compartilhamento seja exibido e funcional
         const shareBtn = DOM.popup.querySelector('.share-btn');
-        shareBtn.onclick = () => shareComanda(comandaId);
+        if (shareBtn) {
+            shareBtn.style.display = 'flex';
+            shareBtn.onclick = () => shareComanda(comandaId); // Registrar o evento
+        }
     } else {
         closePopup();
     }
@@ -158,8 +167,12 @@ const togglePopup = (comandaId) => {
 
 const closePopup = () => {
     DOM.popupOverlay.classList.remove('active');
-    DOM.popupContent.innerHTML = ''; // Limpar conteúdo do popup
-    DOM.popupTotal.innerText = ''; // Limpar total
+    DOM.popup.classList.remove('popup-add-comanda');
+    DOM.popupContent.innerHTML = '';
+    DOM.popupTotal.innerText = '';
+    DOM.popupTotal.style.display = 'none';
+    const shareBtn = DOM.popup.querySelector('.share-btn');
+    if (shareBtn) shareBtn.style.display = 'none';
 };
 
 const shareComanda = async (comandaId) => {
@@ -171,7 +184,7 @@ const shareComanda = async (comandaId) => {
 
     let logoAdded = false;
     try {
-        const logoUrl = 'imagens/bangu-tavares.png';
+        const logoUrl = 'imagens/bangu.png';
         const logoImg = new Image();
         logoImg.crossOrigin = "Anonymous";
         logoImg.src = logoUrl;
@@ -185,7 +198,7 @@ const shareComanda = async (comandaId) => {
                 resolve();
             };
             logoImg.onerror = () => {
-                console.error('Erro ao carregar o logo "bangu-tavares.png".');
+                console.error('Erro ao carregar o logo "bangu.png".');
                 showToast('Erro ao carregar o logo. PDF gerado sem logo.');
                 resolve();
             };
@@ -271,7 +284,8 @@ const shareComanda = async (comandaId) => {
 
 const removeComanda = (id) => {
     const comanda = document.getElementById(`comanda-${id}`);
-    const isSocio = comanda.querySelector(`#socio-${id}`).checked;
+    if (!comanda) return;
+    const isSocio = comanda.querySelector(`#socio-${id}`)?.checked;
     const quantidades = Array.from(comanda.querySelectorAll('.quantidade')).map(input => parseInt(input.value) || 0);
     const items = produtos.map((p, i) => ({
         nome: p.nome,
@@ -283,8 +297,8 @@ const removeComanda = (id) => {
         const closedComandas = JSON.parse(localStorage.getItem('closedComandas')) || [];
         closedComandas.push({
             id,
-            nome: comanda.querySelector(`#customerName-${id}`).value,
-            total: comanda.querySelector(`.total`).innerText,
+            nome: comanda.querySelector(`#customerName-${id}`)?.value || 'Cliente',
+            total: comanda.querySelector(`.total`)?.innerText || 'R$ 0,00',
             items: items,
             closedAt: new Date().toLocaleString('pt-BR')
         });
@@ -309,7 +323,7 @@ const createComanda = (id, nome = '', quantidades = []) => {
                 <label for="customerName-${id}">Nome:</label>
                 <input type="text" id="customerName-${id}" placeholder="Digite o nome do cliente" value="${nome}">
             </div>
-            <button class="remove-btn" onclick="removeComanda(${id})" aria-label="Remover Comanda">X</button>
+            <button class="remove-btn" aria-label="Remover Comanda">X</button>
         </div>
         <table>
             <tr><th scope="col">Produto</th><th scope="col">Qtd</th><th scope="col">Total</th></tr>
@@ -323,8 +337,8 @@ const createComanda = (id, nome = '', quantidades = []) => {
         </table>
         <div class="footer">
             <div class="buttons">
-                <button id="expandBtn-${id}" class="expand-btn" title="Expandir Comanda" tabindex="0"><i class="fas fa-expand"></i></button>
-                <button id="popupBtn-${id}" class="popup-btn hidden" title="Ver Detalhes (Pop-up)" tabindex="0"><i class="fas fa-external-link-alt"></i></button>
+                <button id="expandBtn-${id}" class="expand-btn" title="Expandir/Recolher Comanda" tabindex="0"><i class="fas fa-expand"></i></button>
+                <button id="popupBtn-${id}" class="popup-btn${quantidades.reduce((sum, qty) => sum + (parseInt(qty) || 0), 0) === 0 ? ' hidden' : ''}" title="Ver Detalhes (Pop-up)" tabindex="0"><i class="fas fa-external-link-alt"></i></button>
             </div>
             <div class="socio-container">
                 <div class="socio-checkbox">
@@ -339,31 +353,55 @@ const createComanda = (id, nome = '', quantidades = []) => {
     const expandBtn = comanda.querySelector(`#expandBtn-${id}`);
     const popupBtn = comanda.querySelector(`#popupBtn-${id}`);
     const socioCheckbox = comanda.querySelector(`#socio-${id}`);
-    expandBtn.addEventListener('click', () => toggleExpand(id));
-    popupBtn.addEventListener('click', () => togglePopup(id));
-    socioCheckbox.addEventListener('change', () => updateSocioStatus(id));
-    expandBtn.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            toggleExpand(id);
-        }
-    });
-    popupBtn.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            togglePopup(id);
-        }
+    const removeBtn = comanda.querySelector('.remove-btn');
+
+    if (expandBtn) {
+        expandBtn.addEventListener('click', () => toggleExpand(id));
+        expandBtn.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggleExpand(id);
+            }
+        });
+    }
+
+    if (popupBtn) {
+        popupBtn.addEventListener('click', () => togglePopup(id));
+        popupBtn.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                togglePopup(id);
+            }
+        });
+    }
+
+    if (socioCheckbox) {
+        socioCheckbox.addEventListener('change', () => updateSocioStatus(id));
+    }
+
+    if (removeBtn) {
+        removeBtn.addEventListener('click', () => removeComanda(id));
+    }
+
+    comanda.querySelectorAll('.quantidade').forEach(input => {
+        input.addEventListener('input', () => atualizarTotal(id));
     });
 
-    comanda.querySelectorAll('.quantidade').forEach(input => input.addEventListener('input', () => atualizarTotal(id)));
-    comanda.querySelector(`#customerName-${id}`).addEventListener('input', salvarComandas);
+    const customerNameInput = comanda.querySelector(`#customerName-${id}`);
+    if (customerNameInput) {
+        customerNameInput.addEventListener('input', salvarComandas);
+    }
+
     return comanda;
 };
 
 const updateSocioStatus = (comandaId) => {
     const comanda = document.getElementById(`comanda-${comandaId}`);
-    const isSocio = comanda.querySelector(`#socio-${comandaId}`).checked;
-    comanda.classList.toggle('socio-active', isSocio);
+    if (!comanda) return;
+    const socioCheckbox = comanda.querySelector(`#socio-${comandaId}`);
+    if (socioCheckbox) {
+        comanda.classList.toggle('socio-active', socioCheckbox.checked);
+    }
     salvarComandas();
 };
 
@@ -384,32 +422,64 @@ const reorganizarComandas = () => {
     const sortBy = 'total-desc';
     openComandas.sort((a, b) => {
         if (sortBy === 'total-desc') {
-            const totalA = parseFloat(a.querySelector('.total').innerText.replace(/[^\d,.]/g, '').replace(',', '.')) || 0;
-            const totalB = parseFloat(b.querySelector('.total').innerText.replace(/[^\d,.]/g, '').replace(',', '.')) || 0;
+            const totalA = parseFloat(a.querySelector('.total')?.innerText.replace(/[^\d,.]/g, '').replace(',', '.') || 0);
+            const totalB = parseFloat(b.querySelector('.total')?.innerText.replace(/[^\d,.]/g, '').replace(',', '.') || 0);
             return totalB - totalA;
         } else if (sortBy === 'name-asc') {
-            const nameA = a.querySelector('input[type="text"]').value.toLowerCase();
-            const nameB = b.querySelector('input[type="text"]').value.toLowerCase();
+            const nameA = a.querySelector('input[type="text"]')?.value.toLowerCase() || '';
+            const nameB = b.querySelector('input[type="text"]')?.value.toLowerCase() || '';
             return nameA.localeCompare(nameB);
         }
         return 0;
     });
+
     DOM.openComandas.innerHTML = '';
     openComandas.forEach((comanda, index) => {
         const rowIndex = Math.floor(index / 4);
         const row = getOrCreateRow(rowIndex, DOM.openComandas);
         row.appendChild(comanda);
+
+        // Reatribuir eventos para garantir que não sejam perdidos
+        const id = comanda.id.split('-')[1];
+        const expandBtn = comanda.querySelector(`#expandBtn-${id}`);
+        const popupBtn = comanda.querySelector(`#popupBtn-${id}`);
+        if (expandBtn) {
+            expandBtn.replaceWith(expandBtn.cloneNode(true));
+            const newExpandBtn = comanda.querySelector(`#expandBtn-${id}`);
+            newExpandBtn.addEventListener('click', () => toggleExpand(id));
+            newExpandBtn.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleExpand(id);
+                }
+            });
+        }
+        if (popupBtn) {
+            popupBtn.replaceWith(popupBtn.cloneNode(true));
+            const newPopupBtn = comanda.querySelector(`#popupBtn-${id}`);
+            newPopupBtn.addEventListener('click', () => togglePopup(id));
+            newPopupBtn.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    togglePopup(id);
+                }
+            });
+        }
     });
+
+    DOM.emptyMessage.style.display = openComandas.length === 0 ? 'block' : 'none';
 };
 
 const salvarComandas = () => {
     const comandas = {};
     document.querySelectorAll('.comanda').forEach(c => {
         const id = c.id.split('-')[1];
+        const customerNameInput = document.getElementById(`customerName-${id}`);
+        const socioCheckbox = document.getElementById(`socio-${id}`);
         comandas[id] = {
-            nome: document.getElementById(`customerName-${id}`).value,
+            nome: customerNameInput?.value || '',
             quantidades: Array.from(c.querySelectorAll('.quantidade')).map(i => i.value),
-            isSocio: document.getElementById(`socio-${id}`).checked,
+            isSocio: socioCheckbox?.checked || false,
             expanded: c.classList.contains('expanded'),
             createdAt: comandas[id]?.createdAt || new Date().toISOString()
         };
@@ -436,161 +506,58 @@ const carregarComandas = () => {
         const rowIndex = Math.floor(todasComandas / 4);
         const row = getOrCreateRow(rowIndex, DOM.openComandas);
         row.appendChild(comanda);
-        document.getElementById(`socio-${id}`).checked = data.isSocio || false;
-        if (data.isSocio) comanda.classList.add('socio-active');
+        const socioCheckbox = document.getElementById(`socio-${id}`);
+        if (socioCheckbox) {
+            socioCheckbox.checked = data.isSocio || false;
+            if (data.isSocio) comanda.classList.add('socio-active');
+        }
         if (data.expanded) toggleExpand(id);
         observer.observe(comanda);
-        atualizarTotal(id);
     });
-    reorganizarComandas();
+
+    DOM.emptyMessage.style.display = Object.keys(saved).length === 0 ? 'block' : 'none';
+    updateTotalDebt();
 };
 
 const loadHistory = () => {
     const closedComandas = JSON.parse(localStorage.getItem('closedComandas')) || [];
     DOM.historyBody.innerHTML = closedComandas.map(c => `
         <tr>
-            <td>${c.id}</td>
-            <td>${c.nome || 'Sem Nome'}</td>
+            <td>${c.nome}</td>
             <td>${c.total}</td>
             <td>${c.closedAt}</td>
+            <td>${c.items.map(item => `${item.nome} (${item.quantidade})`).join(', ')}</td>
         </tr>
     `).join('');
 };
 
-const toggleSidebarAndMessage = () => {
-    const comandasCount = document.querySelectorAll('.comanda').length;
-    DOM.emptyMessage.style.display = comandasCount ? 'none' : 'block';
-};
-
-const filterComandas = () => {
-    const searchValue = DOM.searchBar.value.toLowerCase();
-    document.querySelectorAll('.comanda').forEach(c => {
-        const nome = c.querySelector('input[type="text"]').value.toLowerCase();
-        c.style.display = nome.includes(searchValue) ? 'block' : 'none';
-    });
-    reorganizarComandas();
-};
-
-const addProduto = () => {
-    const nome = prompt('Nome do produto:');
-    const preco = parseFloat(prompt('Preço do produto (em R$):'));
-    const icon = prompt('Ícone (ex.: fa-beer-mug-empty, fa-glass-water, fa-bacon):') || 'fa-box';
-    if (nome && !isNaN(preco) && preco > 0) {
-        produtos.push({ nome, preco, icon });
-        localStorage.setItem('produtos', JSON.stringify(produtos));
-        recarregarComandas();
-        showToast(`Produto ${nome} adicionado!`);
-    } else {
-        showToast('Nome ou preço inválido!');
-    }
-};
-
-const deleteProduto = () => {
-    const nome = prompt('Digite o nome do produto a excluir:');
-    const index = produtos.findIndex(p => p.nome.toLowerCase() === nome.toLowerCase());
-    if (index === -1) {
-        showToast('Produto não encontrado!');
-        return;
-    }
-    const comandas = JSON.parse(localStorage.getItem('comandas')) || {};
-    const isInUse = Object.values(comandas).some(c => parseInt(c.quantidades[index]) > 0);
-    if (isInUse) {
-        showToast('Não pode excluir: produto em uso em comanda!');
-        return;
-    }
-    produtos.splice(index, 1);
-    localStorage.setItem('produtos', JSON.stringify(produtos));
-    Object.values(comandas).forEach(c => c.quantidades.splice(index, 1));
-    localStorage.setItem('comandas', JSON.stringify(comandas));
-    recarregarComandas();
-    showToast(`Produto ${nome} excluído!`);
-};
-
-const recarregarComandas = () => {
-    DOM.openComandas.innerHTML = '';
-    carregarComandas();
-};
-
-const exportToCSV = () => {
-    const comandas = JSON.parse(localStorage.getItem('comandas')) || {};
-    const csv = ['ID,Nome,Data de Criação,Total,Itens'];
-    Object.entries(comandas).forEach(([id, data]) => {
-        const comanda = document.getElementById(`comanda-${id}`);
-        if (!comanda) return;
-        const total = Array.from(comanda.querySelectorAll('.preco-total'))
-            .reduce((sum, el) => sum + (parseFloat(el.innerText.replace(/[^\d,.]/g, '').replace(',', '.')) || 0), 0);
-        const quantidades = data.quantidades;
-        const items = produtos.map((p, i) => ({
-            nome: p.nome,
-            preco: p.preco,
-            quantidade: quantidades[i]
-        })).filter(item => parseInt(item.quantidade) > 0);
-        const itemsStr = items.map(item => `${item.nome} (${formatCurrency(item.preco)}) x ${item.quantidade}`).join('; ');
-        const createdAt = new Date(data.createdAt).toLocaleString('pt-BR');
-        csv.push(`${id},${data.nome || 'Sem Nome'},${createdAt},${formatCurrency(total)},${itemsStr || 'Nenhum item'}`);
-    });
-    const csvData = new Blob([csv.join('\n')], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(csvData);
-    const a = document.createElement('a');
-    a.setAttribute('href', url);
-    a.setAttribute('download', 'comandas.csv');
-    a.click();
-};
-
-const switchTab = (tabId) => {
-    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-    document.getElementById(tabId).classList.add('active');
-    document.querySelector(`.nav-btn[data-tab="${tabId}"]`).classList.add('active');
-    if (tabId === 'comandas') {
-        DOM.searchBar.style.display = 'block';
-        DOM.totalDebt.style.display = 'block';
-        DOM.addComanda.style.display = 'block';
-        DOM.addProduto.style.display = 'block';
-        DOM.deleteProduto.style.display = 'block';
-        DOM.exportCSV.style.display = 'block';
-    } else {
-        DOM.searchBar.style.display = 'none';
-        DOM.totalDebt.style.display = 'none';
-        DOM.addComanda.style.display = 'none';
-        DOM.addProduto.style.display = 'none';
-        DOM.deleteProduto.style.display = 'none';
-        DOM.exportCSV.style.display = 'none';
-    }
-};
-
-// Nova função para abrir o popup de adição de comanda
-const openAddComandaPopup = () => {
-    DOM.popupTitle.innerText = 'Adicionar Nova Comanda';
+const addNewComanda = () => {
+    DOM.popup.classList.add('popup-add-comanda');
+    DOM.popupTitle.innerHTML = `
+        <span><i class="fas fa-plus-circle"></i> Adicionar Nova Comanda</span>
+        <div class="name-container">
+            <input type="text" class="customer-name" placeholder="Nome do cliente">
+        </div>
+    `;
+    DOM.popupTableBody.innerHTML = '';
     DOM.popupContent.innerHTML = `
-        <div class="popup-add-comanda">
-            <label for="popupCustomerName">Nome do Cliente:</label>
-            <input type="text" class="customer-name" id="popupCustomerName" placeholder="Digite o nome do cliente">
-            <table>
+        <table>
+            <tr><th scope="col">Produto</th><th scope="col">Qtd</th></tr>
+            ${produtos.map(p => `
                 <tr>
-                    <th>Produto</th>
-                    <th>Preço</th>
-                    <th>Quantidade</th>
+                    <td>${p.nome}</td>
+                    <td><input type="number" class="quantidade" min="0" value="0"></td>
                 </tr>
-                ${produtos.map(p => `
-                    <tr>
-                        <td>${p.nome}</td>
-                        <td>${formatCurrency(p.preco)}</td>
-                        <td><input type="number" class="quantidade" min="0" value="0"></td>
-                    </tr>
-                `).join('')}
-            </table>
-            <div class="total" id="popupAddTotal">Total: ${formatCurrency(0)}</div>
-            <div class="buttons">
-                <button class="submit-btn" disabled>Enviar</button>
-                <button class="cancel-btn">Cancelar</button>
-            </div>
+            `).join('')}
+        </table>
+        <div class="buttons">
+            <button class="submit-btn" disabled><i class="fas fa-check"></i> Confirmar</button>
+            <button class="cancel-btn"><i class="fas fa-times"></i> Cancelar</button>
         </div>
     `;
     DOM.popupOverlay.classList.add('active');
 
-    // Adicionar eventos aos inputs
-    const nameInput = DOM.popupContent.querySelector('#popupCustomerName');
+    const nameInput = DOM.popup.querySelector('.customer-name');
     const quantidades = DOM.popupContent.querySelectorAll('.quantidade');
     const submitBtn = DOM.popupContent.querySelector('.submit-btn');
     const cancelBtn = DOM.popupContent.querySelector('.cancel-btn');
@@ -598,57 +565,28 @@ const openAddComandaPopup = () => {
     nameInput.addEventListener('input', atualizarTotalPopup);
     quantidades.forEach(input => input.addEventListener('input', atualizarTotalPopup));
     cancelBtn.addEventListener('click', closePopup);
-    DOM.popup.querySelector('.close-btn').addEventListener('click', closePopup);
-
     submitBtn.addEventListener('click', () => {
-        if (submitBtn.disabled) {
-            showToast('Preencha o nome do cliente e adicione pelo menos um produto.');
-            return;
-        }
-
-        const newId = Date.now();
-        const nome = nameInput.value.trim();
-        const quantidadesValues = Array.from(quantidades).map(input => parseInt(input.value) || 0);
-        const rowIndex = Math.floor(DOM.openComandas.querySelectorAll('.comanda').length / 4);
+        const id = Date.now().toString();
+        const quantidadesValues = Array.from(quantidades).map(input => input.value);
+        const comanda = createComanda(id, nameInput.value, quantidadesValues);
+        const todasComandas = DOM.openComandas.querySelectorAll('.comanda').length;
+        const rowIndex = Math.floor(todasComandas / 4);
         const row = getOrCreateRow(rowIndex, DOM.openComandas);
-
-        const comanda = createComanda(newId, nome, quantidadesValues);
+        comanda.style.opacity = 0;
         row.appendChild(comanda);
-        atualizarTotal(newId);
+        comanda.style.opacity = 1;
         reorganizarComandas();
-        toggleSidebarAndMessage();
-        showToast('Comanda adicionada!');
+        salvarComandas();
+        updateTotalDebt();
         closePopup();
-    });
-
-    // Inicializar o total
-    atualizarTotalPopup();
-};
-
-window.onload = () => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-        document.body.classList.add('dark-mode');
-    }
-    carregarComandas();
-    loadHistory();
-    toggleSidebarAndMessage();
-    updateTotalDebt();
-    setInterval(updateClock, 1000);
-    updateClock();
-    if (!navigator.onLine) showToast('Sistema offline');
-
-    DOM.addComanda.addEventListener('click', openAddComandaPopup);
-    DOM.addProduto.addEventListener('click', addProduto);
-    DOM.deleteProduto.addEventListener('click', deleteProduto);
-    DOM.searchBar.addEventListener('input', debounce(filterComandas, 300));
-    DOM.exportCSV.addEventListener('click', exportToCSV);
-    DOM.toggleTheme.addEventListener('click', () => {
-        document.body.classList.toggle('dark-mode');
-        localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
-    });
-
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+        showToast('Comanda adicionada!');
     });
 };
+
+// Inicialização
+DOM.addComanda.addEventListener('click', addNewComanda);
+DOM.popup.querySelector('.close-btn').addEventListener('click', closePopup);
+updateClock();
+setInterval(updateClock, 1000);
+carregarComandas();
+loadHistory();
