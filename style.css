@@ -6,7 +6,7 @@
     --input-bg: #fafafa;
     --border-color: #ddd;
     --shadow-color: rgba(0, 0, 0, 0.05);
-    --socio-bg: #ff3333;
+    --socio-bg: #b71c1c;
     --base-font-size: 16px;
 }
 
@@ -33,7 +33,7 @@ body.dark-mode {
     --input-bg: #3c3c3c;
     --border-color: #555;
     --shadow-color: rgba(0, 0, 0, 0.2);
-    --socio-bg: #cc0000;
+    --socio-bg: #8e0000;
 }
 
 .header {
@@ -47,7 +47,7 @@ body.dark-mode {
 }
 
 .header img {
-    width:100px;
+    width: 100px;
     height: 130px;
 }
 
@@ -126,8 +126,6 @@ body.dark-mode {
 #addComanda {
     margin-top: 70px;
 }
-
-
 
 #addComanda:hover, #adminBtn:hover {
     transform: translateY(-2px);
@@ -233,57 +231,6 @@ body.dark-mode {
     height: 1000px;
 }
 
-.comanda.socio-active {
-    background-color: var(--socio-bg);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    border: 2px solid #ffffff;
-    position: relative;
-}
-
-.comanda.socio-active::after {
-    content: '\f4fc';
-    font-family: 'Font Awesome 5 Free';
-    font-weight: 900;
-    position: absolute;
-    top: -10px;
-    right: -10px;
-    background: #ffffff;
-    color: var(--socio-bg);
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-.comanda.socio-active .comanda-header {
-    background: rgba(255, 255, 255, 0.2);
-    color: #ffffff;
-}
-
-.comanda.socio-active .comanda-header input,
-.comanda.socio-active .comanda-header label {
-    color: #ffffff;
-}
-
-.comanda.socio-active th,
-.comanda.socio-active td,
-.comanda.socio-active .total,
-.comanda.socio-active .socio-checkbox label {
-    color: #ffffff;
-}
-
-.comanda.socio-active tr.item:nth-child(even) {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-.comanda.socio-active tr.item:nth-child(odd) {
-    background-color: transparent;
-}
-
 .comanda:hover {
     transform: translateY(-2px);
 }
@@ -308,15 +255,17 @@ body.dark-mode {
     align-items: center;
     gap: 5px;
     flex-grow: 1;
+    padding-left: 15px;
 }
 
 .comanda-header label {
     font-size: 22px;
     letter-spacing: 0.03em;
+    margin: 0;
 }
 
 .comanda-header input {
-    padding: 6px;
+    padding: 6px 6px 6px 0;
     border: 1px solid var(--border-color);
     border-radius: 6px;
     font-size: 16px;
@@ -326,20 +275,7 @@ body.dark-mode {
     max-width: 150px;
     flex-shrink: 0;
     box-sizing: border-box;
-}
-
-.socio-checkbox {
-    display: flex;
-    align-items: center;
-    gap: 2px;
-    font-size: 14px;
-    color: var(--text);
-    margin-right: 10px;
-}
-
-.socio-checkbox input {
-    cursor: pointer;
-    margin: 0;
+    text-indent: 15px;
 }
 
 .remove-btn {
@@ -386,7 +322,11 @@ th {
     color: var(--text);
     font-weight: 400;
     letter-spacing: 0.05em;
-    padding-bottom: 15px;
+}
+
+th:first-child {
+    padding-left: 15px;
+    text-align: left;
 }
 
 td:first-child {
@@ -395,6 +335,7 @@ td:first-child {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    padding-left: 15px;
 }
 
 td:nth-child(2) {
@@ -461,12 +402,6 @@ tr.item:nth-child(odd) {
     gap: 5px;
     flex: 1;
     align-items: center;
-}
-
-.socio-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
 }
 
 .total {
@@ -690,14 +625,23 @@ input[type="number"] {
     box-shadow: 0 2px 10px var(--shadow-color);
 }
 
-.popup-table th, .popup-table td {
+.popup-table tr th {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text);
+    background: linear-gradient(135deg, #a04646);
+    color: white;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+}
+
+.popup-table tr td {
     padding: 10px;
     text-align: left;
     border-bottom: 1px solid var(--border-color);
     color: var(--text);
 }
-
-
 
 .popup-table tr:last-child td {
     border-bottom: none;
@@ -798,30 +742,32 @@ input[type="number"] {
 .popup-add-comanda th,
 .popup-add-comanda td {
     padding: 10px;
-    text-align: left;
     border-bottom: 1px solid var(--border-color);
     color: var(--text);
+}
+
+.popup-add-comanda th:first-child,
+.popup-add-comanda td:first-child {
+    text-align: left;
+    width: 70%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.popup-add-comanda th:nth-child(2),
+.popup-add-comanda td:nth-child(2) {
+    text-align: center;
+    width: 30%;
 }
 
 .popup-add-comanda th {
     background: linear-gradient(135deg, #a04646);
     color: white;
-    font-weight: 700;
+    font-weight: 400;
+    letter-spacing: 0.05em;
     position: sticky;
     top: 0;
-}
-
-.popup-add-comanda td:first-child {
-    width: 70%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-
-}
-
-.popup-add-comanda td:nth-child(2) {
-    width: 30%;
-    text-align: center;
 }
 
 .popup-add-comanda td:first-child::before {
@@ -889,6 +835,7 @@ input[type="number"] {
     align-items: center;
     justify-content: center;
     gap: 8px;
+    position: relative;
 }
 
 .popup-add-comanda .submit-btn {
@@ -903,6 +850,7 @@ input[type="number"] {
     font-family: 'Font Awesome 5 Free';
     font-weight: 900;
     font-size: 16px;
+    margin-right: 8px;
 }
 
 .popup-add-comanda .submit-btn:hover {
@@ -930,6 +878,7 @@ input[type="number"] {
     font-family: 'Font Awesome 5 Free';
     font-weight: 900;
     font-size: 16px;
+    margin-right: 8px;
 }
 
 .popup-add-comanda .cancel-btn:hover {
@@ -955,29 +904,6 @@ input[type="number"] {
     }
 }
 
-.history-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-    background: var(--comanda-bg);
-    border-radius: 12px;
-    box-shadow: 0 3px 15px var(--shadow-color);
-    padding: 15px;
-}
-
-.history-table th, .history-table td {
-    padding: 10px;
-    text-align: left;
-    border-bottom: 1px solid var(--border-color);
-    color: var(--text);
-}
-
-.history-table th {
-    background: #fafafa;
-    font-weight: 400;
-    letter-spacing: 0.05em;
-}
-
 @media (max-width: 600px) {
     body {
         font-size: 14px;
@@ -991,7 +917,7 @@ input[type="number"] {
         padding: 15px;
         border-bottom: none;
         box-shadow: none;
-        transition: left 0.3s ease;
+        transition: left 0.3s;
         z-index: 2000;
     }
     .sidebar.active {
@@ -1060,11 +986,15 @@ input[type="number"] {
         padding: 10px;
         margin: -15px -15px 15px -15px;
     }
+    .comanda-header-left {
+        padding-left: 10px;
+    }
     .comanda-header input {
         width: 100%;
         max-width: 100%;
         font-size: 14px;
-        padding: 5px;
+        padding: 5px 5px 5px 0;
+        text-indent: 10px;
     }
     .comanda-header label {
         font-size: 18px;
@@ -1075,8 +1005,12 @@ input[type="number"] {
     th, td {
         padding: 4px;
     }
+    th:first-child {
+        padding-left: 10px;
+    }
     td:first-child {
         width: 50%;
+        padding-left: 10px;
     }
     td:nth-child(2), td:nth-child(3) {
         width: 25%;

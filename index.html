@@ -4,54 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Boteco do Zé</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Poppins:wght@600&family=Montserrat:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@600&family=Montserrat:wght@700&display=swap">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="sidebar" id="sidebar">
+    <div id="sidebar" class="sidebar">
         <div class="sidebar-top">
             <div class="clock" id="clock">00:00</div>
             <div class="total-debt" id="totalDebt">Total: R$ 0,00</div>
-            <button id="addComanda"><i class="fas fa-plus"></i> Adicionar Comanda</button>
-            <button id="adminBtn"><i class="fas fa-user-shield"></i> Administrador</button>
+            <button id="addComanda">Adicionar Comanda</button>
+            <button id="adminBtn">Administrador</button>
         </div>
     </div>
-    <header class="header">
+
+    <div class="header">
         <img src="imagens/bangu.png" alt="Logo Boteco do Zé" class="logo">
         <h1 class="title">Boteco do Zé</h1>
-    </header>
+    </div>
+
     <div class="container" id="container">
-        <div id="openComandas" class="tab-content active">
-            <div class="empty-message" id="emptyMessage">Nenhuma comanda aberta no momento.</div>
-        </div>
-        <div id="history" class="tab-content">
-            <table class="history-table">
-                <tr><th>Nome</th><th>Total</th><th>Data de Fechamento</th><th>Itens</th></tr>
-                <tbody id="historyBody"></tbody>
-            </table>
+        <div class="tab-content active" id="openComandas">
+            <div id="emptyMessage">Nenhuma comanda aberta no momento.</div>
         </div>
     </div>
-    <div class="toast" id="toast"></div>
-    <div class="popup-overlay" id="popupOverlay">
-        <div class="popup" id="popup">
-            <div class="popup-header">
-                <span id="popupTitle"></span>
-                <button class="close-btn">×</button>
+
+    <div id="popupOverlay" class="popup-overlay">
+        <div id="popup" class="popup">
+            <div class="popup-header" id="popupTitle">
+                <span><i class="fas fa-plus-circle"></i> Adicionar Nova Comanda</span>
+                <div class="name-container">
+                    <input type="text" class="customer-name" placeholder="Nome do cliente">
+                </div>
+                <button class="close-btn" aria-label="Fechar Pop-up">×</button>
             </div>
-            <div class="popup-content" id="popupContent">
-                <table class="popup-table">
-                    <tr><th>Produto</th><th>Preço</th><th>Qtd</th><th>Total</th></tr>
-                    <tbody id="popupTableBody"></tbody>
-                </table>
-            </div>
+            <div id="popupTableBody" class="popup-table"></div>
+            <div class="popup-content" id="popupContent"></div>
             <div class="popup-total" id="popupTotal"></div>
-            <button class="share-btn"><i class="fas fa-share-alt"></i></button>
+            <button class="share-btn" title="Compartilhar Comanda"><i class="fab fa-whatsapp"></i></button>
         </div>
     </div>
+
+    <div id="toast" class="toast"></div>
     <div id="qrcode" style="display: none;"></div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="script.js"></script>
 </body>
