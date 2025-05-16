@@ -111,6 +111,7 @@ const atualizarTotalPopup = () => {
     const hasProducts = Array.from(quantidades).some(input => parseInt(input.value) > 0);
     if (submitBtn) {
         submitBtn.disabled = !(isNameFilled && hasProducts);
+        submitBtn.style.backgroundColor = isNameFilled && hasProducts ? 'green' : 'red'; // Indicador visual
     }
 };
 
@@ -375,7 +376,6 @@ const createComanda = (id, nome = '', quantidades = [], desconto = 0, taxa = 0) 
         removeBtn.addEventListener('click', () => removeComanda(id));
     }
 
-    // Adicionar eventos para quantidades, taxa e desconto
     comanda.querySelectorAll('input[type="number"]').forEach(input => {
         input.addEventListener('input', () => atualizarTotal(id));
     });
@@ -533,20 +533,23 @@ const addNewComanda = () => {
     quantidades.forEach(input => input.addEventListener('input', atualizarTotalPopup));
     cancelBtn.addEventListener('click', closePopup);
     submitBtn.addEventListener('click', () => {
-        const id = Date.now().toString();
-        const quantidadesValues = Array.from(quantidades).map(input => input.value);
-        const comanda = createComanda(id, nameInput.value, quantidadesValues, 0, 0);
-        const todasComandas = DOM.openComandas.querySelectorAll('.comanda').length;
-        const rowIndex = Math.floor(todasComandas / 4);
-        const row = getOrCreateRow(rowIndex, DOM.openComandas);
-        comanda.style.opacity = 0;
-        row.appendChild(comanda);
-        comanda.style.opacity = 1;
-        reorganizarComandas();
-        salvarComandas();
-        updateTotalDebt();
-        closePopup();
-        showToast('Comanda adicionada!');
+        console.log('Botão Confirmar clicado');
+        if (!submitBtn.disabled) {
+            const id = Date.now().toString();
+            const quantidadesValues = Array.from(quantidades).map(input => input.value);
+            const comanda = createComanda(id, nameInput.value, quantidadesValues, 0, 0);
+            const todasComandas = DOM.openComandas.querySelectorAll('.comanda').length;
+            const rowIndex = Math.floor(todasComandas / 4);
+            const row = getOrCreateRow(rowIndex, DOM.openComandas);
+            comanda.style.opacity = 0;
+            row.appendChild(comanda);
+            comanda.style.opacity = 1;
+            reorganizarComandas();
+            salvarComandas();
+            updateTotalDebt();
+            closePopup();
+            showToast('Comanda adicionada!');
+        }
     });
 };
 
