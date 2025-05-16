@@ -111,7 +111,8 @@ const atualizarTotalPopup = () => {
     const hasProducts = Array.from(quantidades).some(input => parseInt(input.value) > 0);
     if (submitBtn) {
         submitBtn.disabled = !(isNameFilled && hasProducts);
-        submitBtn.style.backgroundColor = isNameFilled && hasProducts ? 'green' : 'red'; // Indicador visual
+        submitBtn.style.backgroundColor = isNameFilled && hasProducts ? 'green' : 'red';
+        console.log(`Atualizando popup: Nome preenchido = ${isNameFilled}, Produtos adicionados = ${hasProducts}`);
     }
 };
 
@@ -243,7 +244,7 @@ const shareComanda = async (comandaId) => {
     DOM.popup.style.display = 'block';
 
     const tableBody = DOM.popupTableBody.querySelector('table');
-    if (!tableBody || tableBody.rows.length <= 3) { // Apenas o cabeçalho, desconto e taxa, sem itens
+    if (!tableBody || tableBody.rows.length <= 3) {
         showToast('Nenhum item consumido para exibir no PDF.');
         doc.setFontSize(14);
         doc.setTextColor(255, 0, 0);
@@ -306,6 +307,7 @@ const removeComanda = (id) => {
 };
 
 const createComanda = (id, nome = '', quantidades = [], desconto = 0, taxa = 0) => {
+    console.log(`Criando comanda ${id} para ${nome} com quantidades: ${quantidades}`);
     const comanda = document.createElement('div');
     comanda.className = 'comanda';
     comanda.id = `comanda-${id}`;
@@ -389,6 +391,7 @@ const createComanda = (id, nome = '', quantidades = [], desconto = 0, taxa = 0) 
 };
 
 const getOrCreateRow = (index, container) => {
+    console.log(`Criando ou obtendo linha ${index + 1}`);
     const rowId = `row${index + 1}`;
     let row = container.querySelector(`#${rowId}`);
     if (!row) {
@@ -453,6 +456,7 @@ const reorganizarComandas = () => {
 };
 
 const salvarComandas = () => {
+    console.log('Salvando comandas no localStorage');
     const comandas = {};
     document.querySelectorAll('.comanda').forEach(c => {
         const id = c.id.split('-')[1];
@@ -468,11 +472,23 @@ const salvarComandas = () => {
             createdAt: comandas[id]?.createdAt || new Date().toISOString()
         };
     });
-    localStorage.setItem('comandas', JSON.stringify(comandas));
+    try {
+        localStorage.setItem('comandas', JSON.stringify(comandas));
+        console.log('Comandas salvas com sucesso');
+    } catch (error) {
+        console.error('Erro ao salvar comandas no localStorage:', error);
+    }
 };
 
 const carregarComandas = () => {
-    const saved = JSON.parse(localStorage.getItem('comandas')) || {};
+    console.log('Carregando comandas do localStorage');
+    let saved;
+    try {
+        saved = JSON.parse(localStorage.getItem('comandas')) || {};
+    } catch (error) {
+        console.error('Erro ao carregar comandas do localStorage:', error);
+        saved = {};
+    }
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -499,6 +515,7 @@ const carregarComandas = () => {
 };
 
 const addNewComanda = () => {
+    console.log('Abrindo popup para adicionar nova comanda');
     DOM.popup.classList.add('popup-add-comanda');
     DOM.popupTitle.innerHTML = `
         <span><i class="fas fa-plus-circle"></i> Adicionar Nova Comanda</span>
@@ -529,14 +546,30 @@ const addNewComanda = () => {
     const submitBtn = DOM.popupContent.querySelector('.submit-btn');
     const cancelBtn = DOM.popupContent.querySelector('.cancel-btn');
 
+    if (!nameInput || !quantidades.length || !submitBtn || !cancelBtn) {
+        console.error('Erro: Elementos do popup não encontrados');
+        return;
+    }
+
     nameInput.addEventListener('input', atualizarTotalPopup);
     quantidades.forEach(input => input.addEventListener('input', atualizarTotalPopup));
-    cancelBtn.addEventListener('click', closePopup);
+    cancelBtn.addEventListener('click', () => {
+        console.log('Botão Cancelar clicado');
+        closePopup();
+    });
+
     submitBtn.addEventListener('click', () => {
         console.log('Botão Confirmar clicado');
-        if (!submitBtn.disabled) {
+        if (submitBtn.disabled) {
+            console.log('Botão Confirmar está desabilitado');
+            return;
+        }
+
+        try {
             const id = Date.now().toString();
             const quantidadesValues = Array.from(quantidades).map(input => input.value);
+            console.log(`Criando comanda com ID ${id}, Nome: ${nameInput.value}, Quantidades: ${quantidadesValues}`);
+
             const comanda = createComanda(id, nameInput.value, quantidadesValues, 0, 0);
             const todasComandas = DOM.openComandas.querySelectorAll('.comanda').length;
             const rowIndex = Math.floor(todasComandas / 4);
@@ -544,17 +577,24 @@ const addNewComanda = () => {
             comanda.style.opacity = 0;
             row.appendChild(comanda);
             comanda.style.opacity = 1;
+
             reorganizarComandas();
             salvarComandas();
             updateTotalDebt();
             closePopup();
             showToast('Comanda adicionada!');
+        } catch (error) {
+            console.error('Erro ao adicionar comanda:', error);
+            showToast('Erro ao adicionar comanda. Verifique o console para mais detalhes.');
         }
     });
 };
 
 // Inicialização
-DOM.addComanda.addEventListener('click', addNewComanda);
+DOM.addComanda.addEventListener('click', () => {
+    console.log('Botão Adicionar Comanda clicado');
+    addNewComanda();
+});
 DOM.popup.querySelector('.close-btn').addEventListener('click', closePopup);
 updateClock();
 setInterval(updateClock, 1000);
