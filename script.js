@@ -112,7 +112,7 @@ const atualizarTotalPopup = () => {
     if (submitBtn) {
         submitBtn.disabled = !(isNameFilled && hasProducts);
         submitBtn.style.backgroundColor = isNameFilled && hasProducts ? 'green' : 'red';
-        console.log(`Atualizando popup: Nome preenchido = ${isNameFilled}, Produtos adicionados = ${hasProducts}`);
+        console.log(`Atualizando popup: Nome preenchido = ${isNameFilled}, Produtos adicionados = ${hasProducts}, Botão Confirmar desabilitado = ${submitBtn.disabled}`);
     }
 };
 
@@ -178,13 +178,12 @@ const togglePopup = (comandaId) => {
         `;
         DOM.popupContent.innerHTML = '';
         DOM.popupOverlay.classList.add('active');
-        DOM.popupTotal.style.display = 'none'; // Garantir que popupTotal esteja oculto
+        DOM.popupTotal.style.display = 'none';
 
-        // Remover shareBtn explicitamente
         const shareBtn = DOM.popup.querySelector('.share-btn');
         if (shareBtn) {
             console.log('Removendo shareBtn do DOM');
-            shareBtn.parentNode.removeChild(shareBtn); // Remover o botão do DOM
+            shareBtn.parentNode.removeChild(shareBtn);
         }
     } else {
         closePopup();
@@ -201,7 +200,7 @@ const closePopup = () => {
     const shareBtn = DOM.popup.querySelector('.share-btn');
     if (shareBtn) {
         console.log('Removendo shareBtn do DOM ao fechar');
-        shareBtn.parentNode.removeChild(shareBtn); // Remover o botão ao fechar
+        shareBtn.parentNode.removeChild(shareBtn);
     }
 };
 
@@ -547,7 +546,7 @@ const addNewComanda = () => {
         </div>
     `;
     DOM.popupOverlay.classList.add('active');
-    DOM.popupTotal.style.display = 'none'; // Garantir que popupTotal esteja oculto no popup de adição
+    DOM.popupTotal.style.display = 'none';
 
     const nameInput = DOM.popup.querySelector('.customer-name');
     const quantidades = DOM.popupContent.querySelectorAll('.quantidade');
@@ -559,7 +558,6 @@ const addNewComanda = () => {
         return;
     }
 
-    // Remover shareBtn ao abrir o popup de adição
     const shareBtn = DOM.popup.querySelector('.share-btn');
     if (shareBtn) {
         console.log('Removendo shareBtn do DOM no popup de adição');
@@ -575,17 +573,21 @@ const addNewComanda = () => {
 
     submitBtn.addEventListener('click', () => {
         console.log('Botão Confirmar clicado');
+        console.log(`Estado do botão Confirmar: desabilitado = ${submitBtn.disabled}`);
+
         if (submitBtn.disabled) {
-            console.log('Botão Confirmar está desabilitado');
+            console.log('Botão Confirmar está desabilitado, abortando ação');
             return;
         }
 
         try {
+            console.log('Iniciando criação da comanda');
             const id = Date.now().toString();
             const quantidadesValues = Array.from(quantidades).map(input => input.value);
             console.log(`Criando comanda com ID ${id}, Nome: ${nameInput.value}, Quantidades: ${quantidadesValues}`);
 
             const comanda = createComanda(id, nameInput.value, quantidadesValues, 0, 0);
+            console.log('Comanda criada, adicionando ao DOM');
             const todasComandas = DOM.openComandas.querySelectorAll('.comanda').length;
             const rowIndex = Math.floor(todasComandas / 4);
             const row = getOrCreateRow(rowIndex, DOM.openComandas);
@@ -593,10 +595,15 @@ const addNewComanda = () => {
             row.appendChild(comanda);
             comanda.style.opacity = 1;
 
+            console.log('Reorganizando comandas');
             reorganizarComandas();
+            console.log('Salvando comandas');
             salvarComandas();
+            console.log('Atualizando dívida total');
             updateTotalDebt();
+            console.log('Fechando popup');
             closePopup();
+            console.log('Mostrando toast');
             showToast('Comanda adicionada!');
         } catch (error) {
             console.error('Erro ao adicionar comanda:', error);
