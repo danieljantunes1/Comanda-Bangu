@@ -85,7 +85,7 @@ const atualizarTotal = debounce((comandaId) => {
 
     if (DOM.popupOverlay.classList.contains('active') && DOM.popupTableBody.innerHTML) {
         DOM.popupTotal.innerText = `Total: ${formatCurrency(total)} (Desconto: ${formatCurrency(desconto)}, Taxa: ${formatCurrency(taxa)})`;
-        DOM.popupTotal.style.display = 'block';
+        DOM.popupTotal.style.display = 'none'; // Forçar ocultar por padrão
     }
 
     const popupBtn = document.getElementById(`popupBtn-${comandaId}`);
@@ -134,6 +134,7 @@ const toggleExpand = (comandaId) => {
 };
 
 const togglePopup = (comandaId) => {
+    console.log(`Abrindo popup para comanda ${comandaId}`);
     const comanda = document.getElementById(`comanda-${comandaId}`);
     if (!comanda) return;
     const customerName = comanda.querySelector(`#customerName-${comandaId}`)?.value || 'Cliente';
@@ -177,12 +178,13 @@ const togglePopup = (comandaId) => {
         `;
         DOM.popupContent.innerHTML = '';
         DOM.popupOverlay.classList.add('active');
-        atualizarTotal(comandaId);
+        DOM.popupTotal.style.display = 'none'; // Garantir que popupTotal esteja oculto
 
+        // Remover shareBtn explicitamente
         const shareBtn = DOM.popup.querySelector('.share-btn');
         if (shareBtn) {
-            shareBtn.style.display = 'flex';
-            shareBtn.onclick = () => shareComanda(comandaId);
+            console.log('Removendo shareBtn do DOM');
+            shareBtn.parentNode.removeChild(shareBtn); // Remover o botão do DOM
         }
     } else {
         closePopup();
@@ -190,16 +192,21 @@ const togglePopup = (comandaId) => {
 };
 
 const closePopup = () => {
+    console.log('Fechando popup');
     DOM.popupOverlay.classList.remove('active');
     DOM.popup.classList.remove('popup-add-comanda');
     DOM.popupContent.innerHTML = '';
     DOM.popupTotal.innerText = '';
     DOM.popupTotal.style.display = 'none';
     const shareBtn = DOM.popup.querySelector('.share-btn');
-    if (shareBtn) shareBtn.style.display = 'none';
+    if (shareBtn) {
+        console.log('Removendo shareBtn do DOM ao fechar');
+        shareBtn.parentNode.removeChild(shareBtn); // Remover o botão ao fechar
+    }
 };
 
 const shareComanda = async (comandaId) => {
+    console.log(`Compartilhando comanda ${comandaId}`);
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
@@ -540,6 +547,7 @@ const addNewComanda = () => {
         </div>
     `;
     DOM.popupOverlay.classList.add('active');
+    DOM.popupTotal.style.display = 'none'; // Garantir que popupTotal esteja oculto no popup de adição
 
     const nameInput = DOM.popup.querySelector('.customer-name');
     const quantidades = DOM.popupContent.querySelectorAll('.quantidade');
@@ -549,6 +557,13 @@ const addNewComanda = () => {
     if (!nameInput || !quantidades.length || !submitBtn || !cancelBtn) {
         console.error('Erro: Elementos do popup não encontrados');
         return;
+    }
+
+    // Remover shareBtn ao abrir o popup de adição
+    const shareBtn = DOM.popup.querySelector('.share-btn');
+    if (shareBtn) {
+        console.log('Removendo shareBtn do DOM no popup de adição');
+        shareBtn.parentNode.removeChild(shareBtn);
     }
 
     nameInput.addEventListener('input', atualizarTotalPopup);
