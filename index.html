@@ -1,26 +1,29 @@
 ﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Boteco do Zé</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Poppins:wght@600&family=Montserrat:wght@700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Poppins:wght@600&family=Montserrat:wght@700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <div id="sidebar" class="sidebar">
-        <div class="sidebar-top">
+    <!-- Top menu fixo -->
+    <div class="topbar">
+        <div class="left-group">
+            <img src="imagens/Adesivo.png" alt="Logo Boteco do Zé" class="logo-topbar">
             <div class="clock" id="clock">00:00</div>
+        </div>
+        <h1 class="title-topbar">Boteco do Zé</h1>
+        <div class="right-group">
             <div class="total-debt" id="totalDebt">Total: R$ 0,00</div>
-            <button id="addComanda">Adicionar Comanda</button>
-            <button id="adminBtn">Administrador</button>
+            <button id="addComanda">+</button>
+            <button id="adminBtn">Adm</button>
         </div>
     </div>
 
     <div class="header">
-        <img src="imagens/bangu.png" alt="Logo Boteco do Zé" class="logo">
-        <h1 class="title">Boteco do Zé</h1>
     </div>
 
     <div class="container" id="container">
@@ -34,7 +37,7 @@
             <div class="popup-header" id="popupTitle">
                 <span><i class="fas fa-plus-circle"></i> Adicionar Nova Comanda</span>
                 <div class="name-container">
-                    <input type="text" class="customer-name" placeholder="Nome do cliente">
+                    <input type="text" class="customer-name" placeholder="Nome do cliente" />
                 </div>
                 <button class="close-btn" aria-label="Fechar Pop-up">×</button>
             </div>

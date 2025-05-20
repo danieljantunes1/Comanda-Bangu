@@ -36,21 +36,6 @@ body.dark-mode {
     --socio-bg: #8e0000;
 }
 
-.header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 15px;
-    padding: 20px;
-    width: calc(100% - 340px);
-    margin: 15px 0 0 240px;
-}
-
-.header img {
-    width: 100px;
-    height: 130px;
-}
-
 .title {
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
@@ -60,129 +45,109 @@ body.dark-mode {
     margin: -5px 0 0 100px;
 }
 
-.logo {
-    width: 65px;
-    height: auto;
-    filter: brightness(0) invert(1);
-}
-
-.sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 260px;
-    height: 100%;
-    background: var(--sidebar-bg);
-    padding: 25px;
+.topbar {
     display: flex;
-    flex-direction: column;
+    align-items: center;
     justify-content: space-between;
-    box-shadow: 2px 0 15px var(--shadow-color);
-    border-right: 1px solid var(--border-color);
-    z-index: 1000;
-    transition: background 0.3s, left 0.3s ease;
+    padding: 0 20px;
+    height: 80px;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: fixed;
+    top: 0; 
+    left: 0; 
+    right: 0;
+    z-index: 999;
+    overflow: visible;
 }
 
-.sidebar-top {
+/* Grupo da esquerda */
+.left-group {
     display: flex;
-    flex-direction: column;
-    gap: 25px;
+    align-items: center;
+    gap: 30px; /* Aumentado para evitar sobreposição */
 }
 
-.clock {
-    font-size: 40px;
+/* Título centralizado */
+.title-topbar {
     font-family: 'Montserrat', sans-serif;
     font-weight: 700;
-    color: var(--text);
-    text-align: center;
-    letter-spacing: 0.15em;
-    margin-top: 50px;
+    font-size: 3.5rem;
+    background: #8e0000;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    line-height: 1;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%); /* Centraliza exatamente no meio */
 }
 
+/* Grupo da direita */
+.right-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-right: 20px; /* Espaço à direita para os botões */
+}
+
+/* Relógio */
+.clock {
+    font-size: 1.8rem;
+    font-weight: 500;
+    color: #333;
+    white-space: nowrap;
+    margin: 0px 0 0 20px;
+}
+
+/* Total */
 .total-debt {
-    font-size: 26px;
-    font-weight: 700;
-    color: #852b2b;
-    padding: 8px 12px;
-    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #333;
+    white-space: nowrap;
 }
 
-#addComanda, #adminBtn {
-    background: linear-gradient(135deg, #a04646);
-    border: none;
-    color: white;
-    padding: 15px 30px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 15px;
-    font-weight: 400;
-    transition: transform 0.2s, box-shadow 0.2s;
-    box-shadow: 0 2px 5px var(--shadow-color);
-    min-width: 44px;
-    min-height: 44px;
-    touch-action: manipulation;
+/* Logo */
+.logo-topbar {
+    height: 150px; /* Tamanho aumentado */
+    position: relative;
+    top: 55px;   /* Mantido para levantar um pouco */
+    width: auto;
+    margin-left: 80px;
 }
 
-#addComanda {
-    margin-top: 70px;
-}
-
-#addComanda:hover, #adminBtn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-}
-
-.nav-btn {
-    background: none;
-    border: none;
-    color: #d32f2f;
-    font-size: 16px;
-    font-weight: 400;
-    text-align: left;
-    cursor: pointer;
-    transition: font-size 0.2s, font-weight 0.2s;
-    min-width: 44px;
-    min-height: 44px;
-    touch-action: manipulation;
-}
-
-.nav-btn:hover {
-    text-decoration: underline;
-    font-size: 17px;
+/* Estilo dos botões */
+.topbar button {
+    padding: 4px 8px 4px 8px;
     font-weight: 600;
-}
-
-.nav-btn.active {
-    font-weight: 700;
-    text-decoration: underline;
-}
-
-#toggleTheme {
-    background: linear-gradient(135deg, #d32f2f, #b71c1c);
-    color: white;
-    padding: 10px 20px;
-    border-radius: 8px;
+    border: none;
+    background-color: #ffffff;
+    color: #8e0000;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 14px;
-    font-weight: 400;
-    transition: transform 0.2s, box-shadow 0.2s;
-    box-shadow: 0 2px 5px var(--shadow-color);
+    transition: background-color 0.3s;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.8rem;
+    white-space: nowrap;
 }
 
-#toggleTheme:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+.topbar button:hover {
+    background-color: #8e0000;
+    color: #ffffff
 }
 
+/* Ajuste do container de comandas */
 .container {
-    width: calc(100% - 340px);
+    width: calc(100% - 40px);
     max-width: 1920px;
-    margin: 100px 0 20px 340px;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
     gap: 30px;
     flex-grow: 1;
-    padding: 0 30px;
+    padding: 200px 0 30px;
     box-sizing: border-box;
 }
 
@@ -211,7 +176,7 @@ body.dark-mode {
 
 .comanda {
     background: var(--comanda-bg);
-    padding: 25px;
+    padding: 0 25px 25px 25px;
     border-radius: 12px;
     box-shadow: 0 3px 15px var(--shadow-color);
     width: calc(25% - 22.5px);
@@ -1072,6 +1037,11 @@ input[type="number"] {
     .popup-add-comanda input[type="number"] {
         width: 50px;
         padding: 6px;
+    }
+    /* Ajuste para relógio e total em telas menores */
+    .clock, .total-debt {
+        font-size: 1.5rem; /* Reduzido para evitar quebra de layout */
+        margin: -70px 0 0 25px; /* Margens proporcionais */
     }
 }
 
