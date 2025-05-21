@@ -621,3 +621,37 @@ DOM.popup.querySelector('.close-btn').addEventListener('click', closePopup);
 updateClock();
 setInterval(updateClock, 1000);
 carregarComandas();
+
+// === Início da Tela de Bloqueio ===
+document.addEventListener("DOMContentLoaded", () => {
+  const lockScreen    = document.getElementById("lockScreen");
+  const lockForm      = document.getElementById("lockForm");
+  const lockPassword  = document.getElementById("lockPassword");
+  const submitIcon    = document.getElementById("submitIcon");
+  const senhaCorreta  = "123456"; // ajuste aqui
+
+  // já dá foco no campo de senha
+  lockPassword.focus();
+
+  lockForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const valor = lockPassword.value.trim();
+
+    if (valor === senhaCorreta) {
+      lockScreen.classList.remove("active");
+      showToast("Acesso liberado!");
+    } else {
+      // anima o ícone do botão
+      submitIcon.classList.add("shake");
+      submitIcon.addEventListener("animationend", () => {
+        submitIcon.classList.remove("shake");
+      }, { once: true });
+
+      showToast("Senha incorreta.");
+      lockPassword.value = "";
+      lockPassword.focus();
+    }
+  });
+});
+// === Fim da Tela de Bloqueio ===
+

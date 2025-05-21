@@ -1,59 +1,77 @@
 ﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Boteco do Zé</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Poppins:wght@600&family=Montserrat:wght@700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
-    <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Boteco do Zé</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Poppins:wght@600&family=Montserrat:wght@700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <!-- Top menu fixo -->
-    <div class="topbar">
-        <div class="left-group">
-            <img src="imagens/Adesivo.png" alt="Logo Boteco do Zé" class="logo-topbar">
-            <div class="clock" id="clock">00:00</div>
-        </div>
-        <h1 class="title-topbar">Boteco do Zé</h1>
-        <div class="right-group">
-            <div class="total-debt" id="totalDebt">Total: R$ 0,00</div>
-            <button id="addComanda">+</button>
-            <button id="adminBtn">Adm</button>
-        </div>
+  <!-- Tela de Bloqueio -->
+  <div id="lockScreen" class="lock-overlay active">
+    <div class="lock-popup">
+      <div class="lock-header">
+        <span>Boteco do Zé</span>
+      </div>
+      <div class="lock-content">
+        <form id="lockForm">
+          <div class="input-group">
+            <label for="lockPassword">Digite a senha:</label>
+            <input type="password" id="lockPassword" placeholder="Senha" required />
+          </div>
+          <div class="buttons">
+            <button type="submit" class="submit-btn"></button>
+          </div>
+        </form>
+      </div>
     </div>
+  </div>
 
-    <div class="header">
+  <!-- Top menu fixo -->
+  <div class="topbar">
+    <div class="left-group">
+      <img src="imagens/Adesivo.png" alt="Logo Boteco do Zé" class="logo-topbar">
+      <div class="clock" id="clock">00:00</div>
     </div>
+    <h1 class="title-topbar">Boteco do Zé</h1>
+    <div class="right-group">
+      <div class="total-debt" id="totalDebt">Total: R$ 0,00</div>
+      <button id="addComanda">+</button>
+      <button id="adminBtn">Adm</button>
+    </div>
+  </div>
 
-    <div class="container" id="container">
-        <div class="tab-content active" id="openComandas">
-            <div id="emptyMessage"></div>
+  <div class="container" id="container">
+    <div class="tab-content active" id="openComandas">
+      <div id="emptyMessage" class="empty-message" style="display: none;">
+        Nenhuma comanda aberta
+      </div>
+    </div>
+  </div>
+
+  <div id="popupOverlay" class="popup-overlay">
+    <div id="popup" class="popup">
+      <div class="popup-header" id="popupTitle">
+        <span><i class="fas fa-plus-circle"></i> Adicionar Nova Comanda</span>
+        <div class="name-container">
+          <input type="text" class="customer-name" placeholder="Nome do cliente" />
         </div>
+        <button class="close-btn" aria-label="Fechar Pop-up">×</button>
+      </div>
+      <div id="popupTableBody" class="popup-table"></div>
+      <div class="popup-content" id="popupContent"></div>
+      <div class="popup-total" id="popupTotal"></div>
+      <button class="share-btn" title="Compartilhar Comanda"><i class="fab fa-whatsapp"></i></button>
     </div>
+  </div>
 
-    <div id="popupOverlay" class="popup-overlay">
-        <div id="popup" class="popup">
-            <div class="popup-header" id="popupTitle">
-                <span><i class="fas fa-plus-circle"></i> Adicionar Nova Comanda</span>
-                <div class="name-container">
-                    <input type="text" class="customer-name" placeholder="Nome do cliente" />
-                </div>
-                <button class="close-btn" aria-label="Fechar Pop-up">×</button>
-            </div>
-            <div id="popupTableBody" class="popup-table"></div>
-            <div class="popup-content" id="popupContent"></div>
-            <div class="popup-total" id="popupTotal"></div>
-            <button class="share-btn" title="Compartilhar Comanda"><i class="fab fa-whatsapp"></i></button>
-        </div>
-    </div>
+  <div id="toast" class="toast"></div>
 
-    <div id="toast" class="toast"></div>
-    <div id="qrcode" style="display: none;"></div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="script.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
