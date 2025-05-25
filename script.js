@@ -11,13 +11,9 @@ let produtos = JSON.parse(localStorage.getItem('produtos')) || [
 ];
 
 const DOM = {
-    sidebar: document.getElementById('sidebar'),
     clock: document.getElementById('clock'),
     totalDebt: document.getElementById('totalDebt'),
     addComanda: document.getElementById('addComanda'),
-    addProduto: document.getElementById('addProduto'),
-    deleteProduto: document.getElementById('deleteProduto'),
-    exportCSV: document.getElementById('exportCSV'),
     emptyMessage: document.getElementById('emptyMessage'),
     openComandas: document.getElementById('openComandas'),
     toast: document.getElementById('toast'),
@@ -28,7 +24,10 @@ const DOM = {
     popupContent: document.getElementById('popupContent'),
     popupTableBody: document.getElementById('popupTableBody'),
     popupTotal: document.getElementById('popupTotal'),
-    toggleTheme: document.getElementById('toggleTheme')
+    lockBtn: document.getElementById('lockBtn'),
+    lockScreen: document.getElementById('lockScreen'),
+    lockForm: document.getElementById('lockForm'),
+    lockPassword: document.getElementById('lockPassword')
 };
 
 const formatCurrency = value => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -55,6 +54,33 @@ const debounce = (func, wait) => {
     };
 };
 
+const salvarComandas = () => {
+    const comandas = {};
+    document.querySelectorAll('.comanda').forEach(c => {
+        const id = c.id.split('-')[1];
+        const customerNameInput = document.getElementById(`customerName-${id}`);
+        const taxaInput = document.getElementById(`taxa-${id}`);
+        const descontoInput = document.getElementById(`desconto-${id}`);
+        comandas[id] = {
+            nome: customerNameInput?.value || '',
+            quantidades: Array.from(c.querySelectorAll('.quantidade')).map(i => parseInt(i.value) || 0),
+            taxa: parseFloat(taxaInput?.value) || 0,
+            desconto: parseFloat(descontoInput?.value) || 0,
+            expanded: c.classList.contains('expanded'),
+            createdAt: comandas[id]?.createdAt || new Date().toISOString()
+        };
+    });
+    try {
+        localStorage.setItem('comandas', JSON.stringify(comandas));
+        console.log('Comandas salvas:', comandas);
+    } catch (error) {
+        console.error('Erro ao salvar comandas:', error);
+        showToast('Erro ao salvar comandas.');
+    }
+};
+
+const salvarComandasDebounced = debounce(salvarComandas, 300);
+
 const atualizarTotal = debounce((comandaId) => {
     const comanda = document.getElementById(`comanda-${comandaId}`);
     if (!comanda) return;
@@ -75,7 +101,6 @@ const atualizarTotal = debounce((comandaId) => {
 
     const taxa = parseFloat(taxaInput.value) || 0;
     const desconto = parseFloat(descontoInput.value) || 0;
-    console.log(`Calculando total para comanda ${comandaId}: Taxa = ${taxa}, Desconto = ${desconto}, Subtotal = ${total}`);
     total = total - desconto + taxa;
 
     const totalElement = document.getElementById(`total-${comandaId}`);
@@ -83,17 +108,12 @@ const atualizarTotal = debounce((comandaId) => {
         totalElement.innerText = `Total: ${formatCurrency(total)}`;
     }
 
-    if (DOM.popupOverlay.classList.contains('active') && DOM.popupTableBody.innerHTML) {
-        DOM.popupTotal.innerText = `Total: ${formatCurrency(total)} (Desconto: ${formatCurrency(desconto)}, Taxa: ${formatCurrency(taxa)})`;
-        DOM.popupTotal.style.display = 'none'; // Forçar ocultar por padrão
+    const shareBtn = document.getElementById(`shareBtn-${comandaId}`);
+    if (shareBtn) {
+        shareBtn.classList.toggle('hidden', total === 0);
     }
 
-    const popupBtn = document.getElementById(`popupBtn-${comandaId}`);
-    if (popupBtn) {
-        popupBtn.classList.toggle('hidden', total === 0);
-    }
-
-    salvarComandas();
+    salvarComandasDebounced();
     updateTotalDebt();
 
     const isExpanded = comanda.classList.contains('expanded');
@@ -111,8 +131,9 @@ const atualizarTotalPopup = () => {
     const hasProducts = Array.from(quantidades).some(input => parseInt(input.value) > 0);
     if (submitBtn) {
         submitBtn.disabled = !(isNameFilled && hasProducts);
-        submitBtn.style.backgroundColor = isNameFilled && hasProducts ? 'green' : 'red';
-        console.log(`Atualizando popup: Nome preenchido = ${isNameFilled}, Produtos adicionados = ${hasProducts}, Botão Confirmar desabilitado = ${submitBtn.disabled}`);
+        submitBtn.style.background = isNameFilled && hasProducts 
+            ? 'linear-gradient(135deg, #d32f2f, #b71c1c)' 
+            : '#cccccc';
     }
 };
 
@@ -131,81 +152,19 @@ const toggleExpand = (comandaId) => {
     });
 
     atualizarTotal(comandaId);
-};
-
-const togglePopup = (comandaId) => {
-    console.log(`Abrindo popup para comanda ${comandaId}`);
-    const comanda = document.getElementById(`comanda-${comandaId}`);
-    if (!comanda) return;
-    const customerName = comanda.querySelector(`#customerName-${comandaId}`)?.value || 'Cliente';
-    const quantidades = Array.from(comanda.querySelectorAll('.quantidade')).map(input => input.value);
-    const taxa = parseFloat(comanda.querySelector(`#taxa-${comandaId}`).value) || 0;
-    const desconto = parseFloat(comanda.querySelector(`#desconto-${comandaId}`).value) || 0;
-
-    if (!DOM.popupOverlay.classList.contains('active')) {
-        DOM.popup.classList.remove('popup-add-comanda');
-        DOM.popupTitle.innerHTML = `<i class="fas fa-file-alt"></i> Detalhes da Comanda - ${customerName}`;
-        DOM.popupTableBody.innerHTML = `
-            <table>
-                <tr>
-                    <th scope="col">Produto</th>
-                    <th scope="col">Preço</th>
-                    <th scope="col">Qtd</th>
-                    <th scope="col">Total</th>
-                </tr>
-                ${produtos.map((p, i) => {
-                    const qty = parseInt(quantidades[i]) || 0;
-                    if (qty === 0) return '';
-                    const subtotal = qty * p.preco;
-                    return `
-                        <tr>
-                            <td>${p.nome}</td>
-                            <td>${formatCurrency(p.preco)}</td>
-                            <td>${qty}</td>
-                            <td>${formatCurrency(subtotal)}</td>
-                        </tr>
-                    `;
-                }).join('')}
-                <tr>
-                    <td colspan="3">Desconto</td>
-                    <td>-${formatCurrency(desconto)}</td>
-                </tr>
-                <tr>
-                    <td colspan="3">Taxa</td>
-                    <td>${formatCurrency(taxa)}</td>
-                </tr>
-            </table>
-        `;
-        DOM.popupContent.innerHTML = '';
-        DOM.popupOverlay.classList.add('active');
-        DOM.popupTotal.style.display = 'none';
-
-        const shareBtn = DOM.popup.querySelector('.share-btn');
-        if (shareBtn) {
-            console.log('Removendo shareBtn do DOM');
-            shareBtn.parentNode.removeChild(shareBtn);
-        }
-    } else {
-        closePopup();
-    }
+    salvarComandasDebounced();
 };
 
 const closePopup = () => {
-    console.log('Fechando popup');
     DOM.popupOverlay.classList.remove('active');
     DOM.popup.classList.remove('popup-add-comanda');
     DOM.popupContent.innerHTML = '';
+    DOM.popupTableBody.innerHTML = '';
     DOM.popupTotal.innerText = '';
     DOM.popupTotal.style.display = 'none';
-    const shareBtn = DOM.popup.querySelector('.share-btn');
-    if (shareBtn) {
-        console.log('Removendo shareBtn do DOM ao fechar');
-        shareBtn.parentNode.removeChild(shareBtn);
-    }
 };
 
-const shareComanda = async (comandaId) => {
-    console.log(`Compartilhando comanda ${comandaId}`);
+const generatePDF = async (comandaId) => {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
@@ -219,7 +178,7 @@ const shareComanda = async (comandaId) => {
         logoImg.crossOrigin = "Anonymous";
         logoImg.src = logoUrl;
 
-        await new Promise((resolve, reject) => {
+        await new Promise((resolve) => {
             logoImg.onload = () => {
                 doc.setFillColor(255, 255, 255);
                 doc.rect(10, 10, 30, 30, 'F');
@@ -229,7 +188,7 @@ const shareComanda = async (comandaId) => {
             };
             logoImg.onerror = () => {
                 console.error('Erro ao carregar o logo "bangu.png".');
-                showToast('Erro ao carregar o logo. PDF gerado sem logo.');
+                showToast('Erro ao carregar o logo.');
                 resolve();
             };
         });
@@ -246,33 +205,27 @@ const shareComanda = async (comandaId) => {
     doc.setDrawColor(0, 0, 0);
     doc.line(10, 45, 200, 45);
 
-    DOM.popupOverlay.classList.add('active');
-    DOM.popup.style.display = 'block';
-
     const tableBody = DOM.popupTableBody.querySelector('table');
-    if (!tableBody || tableBody.rows.length <= 3) {
+    if (!tableBody || tableBody.rows.length <= 1) {
         showToast('Nenhum item consumido para exibir no PDF.');
         doc.setFontSize(14);
         doc.setTextColor(255, 0, 0);
         doc.text('Nenhum item consumido.', 10, 55);
-        closePopup();
-        return;
+        return null;
     }
 
     let popupHeight = 0;
     try {
         await new Promise(resolve => setTimeout(resolve, 100));
-
         const canvas = await html2canvas(tableBody, { scale: 2, useCORS: true });
         const imgData = canvas.toDataURL('image/png');
         const imgWidth = 190;
         popupHeight = (canvas.height * imgWidth) / canvas.width;
         doc.addImage(imgData, 'PNG', 10, 55, imgWidth, popupHeight);
     } catch (error) {
-        console.error('Erro ao capturar a tabela do pop-up:', error);
+        console.error('Erro ao capturar a tabela:', error);
         showToast('Erro ao capturar os itens da comanda.');
-        closePopup();
-        return;
+        return null;
     }
 
     const customerName = document.getElementById(`customerName-${comandaId}`)?.value || 'Cliente';
@@ -285,21 +238,132 @@ const shareComanda = async (comandaId) => {
     doc.setFontSize(12);
     doc.text('Chave Pix: (48) 99636-8579', 10, pixMessageY + 20);
 
-    try {
-        const pdfBlob = doc.output('blob');
-        const url = window.URL.createObjectURL(pdfBlob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `comanda_${comandaId}.pdf`;
-        a.click();
-        window.URL.revokeObjectURL(url);
-        showToast('PDF da comanda gerado e baixado!');
-    } catch (error) {
-        console.error('Erro ao salvar o PDF:', error);
-        showToast('Erro ao salvar o PDF.');
-    }
+    return doc;
+};
 
-    closePopup();
+const shareComanda = async (comandaId) => {
+    const comanda = document.getElementById(`comanda-${comandaId}`);
+    if (!comanda) return;
+
+    const customerName = comanda.querySelector(`#customerName-${comandaId}`)?.value || 'Cliente';
+    const quantidades = Array.from(comanda.querySelectorAll('.quantidade')).map(input => input.value);
+    const taxa = parseFloat(comanda.querySelector(`#taxa-${comandaId}`).value) || 0;
+    const desconto = parseFloat(comanda.querySelector(`#desconto-${comandaId}`).value) || 0;
+
+    DOM.popup.classList.remove('popup-add-comanda');
+    DOM.popupTitle.innerHTML = `<i class="fas fa-file-alt"></i> Comanda - ${customerName}`;
+    DOM.popupTableBody.innerHTML = `
+        <table class="popup-table">
+            <tr>
+                <th scope="col">Produto</th>
+                <th scope="col">Preço</th>
+                <th scope="col">Qtd</th>
+                <th scope="col">Total</th>
+            </tr>
+            ${produtos.map((p, i) => {
+                const qty = parseInt(quantidades[i]) || 0;
+                if (qty === 0) return '';
+                const subtotal = qty * p.preco;
+                return `
+                    <tr>
+                        <td>${p.nome}</td>
+                        <td>${formatCurrency(p.preco)}</td>
+                        <td>${qty}</td>
+                        <td>${formatCurrency(subtotal)}</td>
+                    </tr>
+                `;
+            }).join('')}
+            ${desconto > 0 ? `
+                <tr>
+                    <td colspan="3">Desconto</td>
+                    <td>-${formatCurrency(desconto)}</td>
+                </tr>
+            ` : ''}
+            ${taxa > 0 ? `
+                <tr>
+                    <td colspan="3">Taxa</td>
+                    <td>${formatCurrency(taxa)}</td>
+                </tr>
+            ` : ''}
+        </table>
+    `;
+    DOM.popupContent.innerHTML = `
+        <div class="buttons">
+            <button class="share-btn" id="downloadBtn-${comandaId}" title="Baixar PDF"><i class="fas fa-download"></i></button>
+            <button class="share-btn" id="shareGenericBtn-${comandaId}" title="Compartilhar"><i class="fas fa-share-alt"></i></button>
+        </div>
+    `;
+    DOM.popupOverlay.classList.add('active');
+
+    const total = quantidades.reduce((sum, qty, i) => sum + (parseInt(qty) || 0) * produtos[i].preco, 0) - desconto + taxa;
+    DOM.popupTotal.innerText = `Total: ${formatCurrency(total)}`;
+    DOM.popupTotal.style.display = 'block';
+    DOM.popupTotal.style.background = '#ffffff';
+    DOM.popupTotal.style.color = '#333333';
+    DOM.popupTotal.style.padding = '10px 20px';
+    DOM.popupTotal.style.margin = '10px 0';
+    DOM.popupTotal.style.borderRadius = '8px';
+    DOM.popupTotal.style.border = '2px solid #d32f2f';
+    DOM.popupTotal.style.fontWeight = 'bold';
+    DOM.popupTotal.style.fontSize = '18px';
+    DOM.popupTotal.style.textAlign = 'center';
+    DOM.popupTotal.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+
+    const downloadBtn = document.getElementById(`downloadBtn-${comandaId}`);
+    const shareGenericBtn = document.getElementById(`shareGenericBtn-${comandaId}`);
+
+    downloadBtn.addEventListener('click', async () => {
+        showToast('Gerando PDF...');
+        const doc = await generatePDF(comandaId);
+        if (doc) {
+            try {
+                const pdfBlob = doc.output('blob');
+                const url = window.URL.createObjectURL(pdfBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `comanda_${comandaId}.pdf`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+                showToast('PDF baixado com sucesso!');
+            } catch (error) {
+                console.error('Erro ao baixar o PDF:', error);
+                showToast('Erro ao baixar o PDF.');
+            }
+        }
+        closePopup();
+    });
+
+    shareGenericBtn.addEventListener('click', async () => {
+        showToast('Preparando para compartilhamento...');
+        const doc = await generatePDF(comandaId);
+        if (doc) {
+            try {
+                const pdfBlob = doc.output('blob');
+                const file = new File([pdfBlob], `comanda_${comandaId}.pdf`, { type: 'application/pdf' });
+                const message = `Comanda de ${customerName} - Boteco do Zé`;
+                if (navigator.share && navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        files: [file],
+                        title: message,
+                        text: 'Confira a comanda do Boteco do Zé!'
+                    });
+                    showToast('Comanda compartilhada!');
+                } else {
+                    const url = window.URL.createObjectURL(pdfBlob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `comanda_${comandaId}.pdf`;
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    showToast('PDF baixado. Compartilhe manualmente.');
+                }
+            } catch (error) {
+                console.error('Erro ao compartilhar:', error);
+                showToast('Erro ao compartilhar. Tente baixar e enviar manualmente.');
+            }
+        }
+        closePopup();
+    });
 };
 
 const removeComanda = (id) => {
@@ -307,13 +371,12 @@ const removeComanda = (id) => {
     if (!comanda) return;
     comanda.remove();
     reorganizarComandas();
-    salvarComandas();
+    salvarComandasDebounced();
     updateTotalDebt();
     showToast('Comanda fechada!');
 };
 
 const createComanda = (id, nome = '', quantidades = [], desconto = 0, taxa = 0) => {
-    console.log(`Criando comanda ${id} para ${nome} com quantidades: ${quantidades}`);
     const comanda = document.createElement('div');
     comanda.className = 'comanda';
     comanda.id = `comanda-${id}`;
@@ -338,17 +401,17 @@ const createComanda = (id, nome = '', quantidades = [], desconto = 0, taxa = 0) 
         <div class="cash-input-container" style="display: flex; justify-content: space-between; margin-bottom: 10px;">
             <div style="display: flex; align-items: center; gap: 10px;">
                 <label for="taxa-${id}" style="font-size: 14px;">Taxa (R$):</label>
-                <input type="number" id="taxa-${id}" step="0.01" value="${taxa}" min="0">
+                <input type="number" id="taxa-${id}" step="0.01" min="0" value="${taxa}">
             </div>
             <div style="display: flex; align-items: center; gap: 10px;">
                 <label for="desconto-${id}" style="font-size: 14px;">Desconto (R$):</label>
-                <input type="number" id="desconto-${id}" step="0.01" value="${desconto}" min="0">
+                <input type="number" id="desconto-${id}" step="0.01" min="0" value="${desconto}">
             </div>
         </div>
         <div class="footer">
             <div class="buttons">
                 <button id="expandBtn-${id}" class="expand-btn" title="Expandir/Recolher Comanda" tabindex="0"><i class="fas fa-expand"></i></button>
-                <button id="popupBtn-${id}" class="popup-btn${quantidades.reduce((sum, qty) => sum + (parseInt(qty) || 0), 0) === 0 && desconto === 0 && taxa === 0 ? ' hidden' : ''}" title="Ver Detalhes (Pop-up)" tabindex="0"><i class="fas fa-external-link-alt"></i></button>
+                <button id="shareBtn-${id}" class="share-btn${quantidades.reduce((sum, qty) => sum + (parseInt(qty) || 0), 0) === 0 && desconto === 0 && taxa === 0 ? ' hidden' : ''}" title="Compartilhar Comanda" tabindex="0"><i class="fas fa-share-alt"></i></button>
             </div>
             <div class="socio-container">
                 <div class="total" id="total-${id}">Total: ${formatCurrency(quantidades.reduce((sum, qty, i) => sum + (parseInt(qty) || 0) * produtos[i].preco, 0) - desconto + taxa)}</div>
@@ -357,7 +420,7 @@ const createComanda = (id, nome = '', quantidades = [], desconto = 0, taxa = 0) 
     `;
 
     const expandBtn = comanda.querySelector(`#expandBtn-${id}`);
-    const popupBtn = comanda.querySelector(`#popupBtn-${id}`);
+    const shareBtn = comanda.querySelector(`#shareBtn-${id}`);
     const removeBtn = comanda.querySelector('.remove-btn');
 
     if (expandBtn) {
@@ -370,12 +433,12 @@ const createComanda = (id, nome = '', quantidades = [], desconto = 0, taxa = 0) 
         });
     }
 
-    if (popupBtn) {
-        popupBtn.addEventListener('click', () => togglePopup(id));
-        popupBtn.addEventListener('keydown', (e) => {
+    if (shareBtn) {
+        shareBtn.addEventListener('click', () => shareComanda(id));
+        shareBtn.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
-                togglePopup(id);
+                shareComanda(id);
             }
         });
     }
@@ -390,14 +453,13 @@ const createComanda = (id, nome = '', quantidades = [], desconto = 0, taxa = 0) 
 
     const customerNameInput = comanda.querySelector(`#customerName-${id}`);
     if (customerNameInput) {
-        customerNameInput.addEventListener('input', salvarComandas);
+        customerNameInput.addEventListener('input', salvarComandasDebounced);
     }
 
     return comanda;
 };
 
 const getOrCreateRow = (index, container) => {
-    console.log(`Criando ou obtendo linha ${index + 1}`);
     const rowId = `row${index + 1}`;
     let row = container.querySelector(`#${rowId}`);
     if (!row) {
@@ -417,10 +479,6 @@ const reorganizarComandas = () => {
             const totalA = parseFloat(a.querySelector('.total')?.innerText.replace(/[^\d,.]/g, '').replace(',', '.') || 0);
             const totalB = parseFloat(b.querySelector('.total')?.innerText.replace(/[^\d,.]/g, '').replace(',', '.') || 0);
             return totalB - totalA;
-        } else if (sortBy === 'name-asc') {
-            const nameA = a.querySelector('input[type="text"]')?.value.toLowerCase() || '';
-            const nameB = b.querySelector('input[type="text"]')?.value.toLowerCase() || '';
-            return nameA.localeCompare(nameB);
         }
         return 0;
     });
@@ -433,7 +491,7 @@ const reorganizarComandas = () => {
 
         const id = comanda.id.split('-')[1];
         const expandBtn = comanda.querySelector(`#expandBtn-${id}`);
-        const popupBtn = comanda.querySelector(`#popupBtn-${id}`);
+        const shareBtn = comanda.querySelector(`#shareBtn-${id}`);
         if (expandBtn) {
             expandBtn.replaceWith(expandBtn.cloneNode(true));
             const newExpandBtn = comanda.querySelector(`#expandBtn-${id}`);
@@ -445,56 +503,37 @@ const reorganizarComandas = () => {
                 }
             });
         }
-        if (popupBtn) {
-            popupBtn.replaceWith(popupBtn.cloneNode(true));
-            const newPopupBtn = comanda.querySelector(`#popupBtn-${id}`);
-            newPopupBtn.addEventListener('click', () => togglePopup(id));
-            newPopupBtn.addEventListener('keydown', (e) => {
+        if (shareBtn) {
+            shareBtn.replaceWith(shareBtn.cloneNode(true));
+            const newShareBtn = comanda.querySelector(`#shareBtn-${id}`);
+            newShareBtn.addEventListener('click', () => shareComanda(id));
+            newShareBtn.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    togglePopup(id);
+                    shareComanda(id);
                 }
             });
         }
     });
 
     DOM.emptyMessage.style.display = openComandas.length === 0 ? 'block' : 'none';
-};
-
-const salvarComandas = () => {
-    console.log('Salvando comandas no localStorage');
-    const comandas = {};
-    document.querySelectorAll('.comanda').forEach(c => {
-        const id = c.id.split('-')[1];
-        const customerNameInput = document.getElementById(`customerName-${id}`);
-        const taxaInput = document.getElementById(`taxa-${id}`);
-        const descontoInput = document.getElementById(`desconto-${id}`);
-        comandas[id] = {
-            nome: customerNameInput?.value || '',
-            quantidades: Array.from(c.querySelectorAll('.quantidade')).map(i => i.value),
-            taxa: parseFloat(taxaInput?.value) || 0,
-            desconto: parseFloat(descontoInput?.value) || 0,
-            expanded: c.classList.contains('expanded'),
-            createdAt: comandas[id]?.createdAt || new Date().toISOString()
-        };
-    });
-    try {
-        localStorage.setItem('comandas', JSON.stringify(comandas));
-        console.log('Comandas salvas com sucesso');
-    } catch (error) {
-        console.error('Erro ao salvar comandas no localStorage:', error);
-    }
+    salvarComandasDebounced();
 };
 
 const carregarComandas = () => {
-    console.log('Carregando comandas do localStorage');
-    let saved;
+    let saved = {};
     try {
-        saved = JSON.parse(localStorage.getItem('comandas')) || {};
+        const stored = localStorage.getItem('comandas');
+        if (stored) {
+            saved = JSON.parse(stored);
+            console.log('Comandas carregadas:', saved);
+        }
     } catch (error) {
-        console.error('Erro ao carregar comandas do localStorage:', error);
-        saved = {};
+        console.error('Erro ao carregar comandas:', error);
+        showToast('Erro ao carregar comandas. Iniciando com lista vazia.');
+        localStorage.setItem('comandas', JSON.stringify({}));
     }
+
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -505,23 +544,29 @@ const carregarComandas = () => {
         });
     }, { threshold: 0.1 });
 
-    Object.entries(saved).forEach(([id, data]) => {
-        const comanda = createComanda(id, data.nome, data.quantidades, data.desconto, data.taxa);
-        comanda.style.opacity = 0;
-        const todasComandas = DOM.openComandas.querySelectorAll('.comanda').length;
-        const rowIndex = Math.floor(todasComandas / 4);
-        const row = getOrCreateRow(rowIndex, DOM.openComandas);
-        row.appendChild(comanda);
-        if (data.expanded) toggleExpand(id);
-        observer.observe(comanda);
-    });
+    if (saved && typeof saved === 'object') {
+        Object.entries(saved).forEach(([id, data]) => {
+            try {
+                const quantidades = Array.isArray(data.quantidades) ? data.quantidades : new Array(produtos.length).fill(0);
+                const comanda = createComanda(id, data.nome || '', quantidades, data.desconto || 0, data.taxa || 0);
+                comanda.style.opacity = 0;
+                const todasComandas = DOM.openComandas.querySelectorAll('.comanda').length;
+                const rowIndex = Math.floor(todasComandas / 4);
+                const row = getOrCreateRow(rowIndex, DOM.openComandas);
+                row.appendChild(comanda);
+                if (data.expanded) toggleExpand(id);
+                observer.observe(comanda);
+            } catch (error) {
+                console.error(`Erro ao criar comanda ${id}:`, error);
+            }
+        });
+    }
 
     DOM.emptyMessage.style.display = Object.keys(saved).length === 0 ? 'block' : 'none';
     updateTotalDebt();
 };
 
 const addNewComanda = () => {
-    console.log('Abrindo popup para adicionar nova comanda');
     DOM.popup.classList.add('popup-add-comanda');
     DOM.popupTitle.innerHTML = `
         <span><i class="fas fa-plus-circle"></i> Adicionar Nova Comanda</span>
@@ -553,105 +598,90 @@ const addNewComanda = () => {
     const submitBtn = DOM.popupContent.querySelector('.submit-btn');
     const cancelBtn = DOM.popupContent.querySelector('.cancel-btn');
 
-    if (!nameInput || !quantidades.length || !submitBtn || !cancelBtn) {
-        console.error('Erro: Elementos do popup não encontrados');
-        return;
-    }
-
-    const shareBtn = DOM.popup.querySelector('.share-btn');
-    if (shareBtn) {
-        console.log('Removendo shareBtn do DOM no popup de adição');
-        shareBtn.parentNode.removeChild(shareBtn);
-    }
-
     nameInput.addEventListener('input', atualizarTotalPopup);
     quantidades.forEach(input => input.addEventListener('input', atualizarTotalPopup));
-    cancelBtn.addEventListener('click', () => {
-        console.log('Botão Cancelar clicado');
-        closePopup();
-    });
+    cancelBtn.addEventListener('click', closePopup);
 
     submitBtn.addEventListener('click', () => {
-        console.log('Botão Confirmar clicado');
-        console.log(`Estado do botão Confirmar: desabilitado = ${submitBtn.disabled}`);
+        if (submitBtn.disabled) return;
 
-        if (submitBtn.disabled) {
-            console.log('Botão Confirmar está desabilitado, abortando ação');
-            return;
-        }
+        const id = Date.now().toString();
+        const quantidadesValues = Array.from(quantidades).map(input => input.value);
+        const comanda = createComanda(id, nameInput.value, quantidadesValues, 0, 0);
+        const todasComandas = DOM.openComandas.querySelectorAll('.comanda').length;
+        const rowIndex = Math.floor(todasComandas / 4);
+        const row = getOrCreateRow(rowIndex, DOM.openComandas);
+        comanda.style.opacity = 0;
+        row.appendChild(comanda);
+        comanda.style.opacity = 1;
 
-        try {
-            console.log('Iniciando criação da comanda');
-            const id = Date.now().toString();
-            const quantidadesValues = Array.from(quantidades).map(input => input.value);
-            console.log(`Criando comanda com ID ${id}, Nome: ${nameInput.value}, Quantidades: ${quantidadesValues}`);
-
-            const comanda = createComanda(id, nameInput.value, quantidadesValues, 0, 0);
-            console.log('Comanda criada, adicionando ao DOM');
-            const todasComandas = DOM.openComandas.querySelectorAll('.comanda').length;
-            const rowIndex = Math.floor(todasComandas / 4);
-            const row = getOrCreateRow(rowIndex, DOM.openComandas);
-            comanda.style.opacity = 0;
-            row.appendChild(comanda);
-            comanda.style.opacity = 1;
-
-            console.log('Reorganizando comandas');
-            reorganizarComandas();
-            console.log('Salvando comandas');
-            salvarComandas();
-            console.log('Atualizando dívida total');
-            updateTotalDebt();
-            console.log('Fechando popup');
-            closePopup();
-            console.log('Mostrando toast');
-            showToast('Comanda adicionada!');
-        } catch (error) {
-            console.error('Erro ao adicionar comanda:', error);
-            showToast('Erro ao adicionar comanda. Verifique o console para mais detalhes.');
-        }
+        reorganizarComandas();
+        salvarComandasDebounced();
+        updateTotalDebt();
+        closePopup();
+        showToast('Comanda adicionada!');
     });
 };
 
-// Inicialização
-DOM.addComanda.addEventListener('click', () => {
-    console.log('Botão Adicionar Comanda clicado');
-    addNewComanda();
-});
-DOM.popup.querySelector('.close-btn').addEventListener('click', closePopup);
-updateClock();
-setInterval(updateClock, 1000);
-carregarComandas();
+// Tela de Bloqueio
+const toggleLockScreen = () => {
+    DOM.lockScreen.classList.add('active');
+    DOM.lockPassword.focus();
+    localStorage.setItem('isUnlocked', 'false');
+    showToast('Tela bloqueada.');
+};
 
-// === Início da Tela de Bloqueio ===
-document.addEventListener("DOMContentLoaded", () => {
-  const lockScreen    = document.getElementById("lockScreen");
-  const lockForm      = document.getElementById("lockForm");
-  const lockPassword  = document.getElementById("lockPassword");
-  const submitIcon    = document.getElementById("submitIcon");
-  const senhaCorreta  = "123456"; // ajuste aqui
-
-  // já dá foco no campo de senha
-  lockPassword.focus();
-
-  lockForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const valor = lockPassword.value.trim();
-
-    if (valor === senhaCorreta) {
-      lockScreen.classList.remove("active");
-      showToast("Acesso liberado!");
-    } else {
-      // anima o ícone do botão
-      submitIcon.classList.add("shake");
-      submitIcon.addEventListener("animationend", () => {
-        submitIcon.classList.remove("shake");
-      }, { once: true });
-
-      showToast("Senha incorreta.");
-      lockPassword.value = "";
-      lockPassword.focus();
+// Adicionar Botão de Bloqueio Dinamicamente
+const addLockButton = () => {
+    if (!DOM.lockBtn) {
+        const lockBtn = document.createElement('button');
+        lockBtn.id = 'lockBtn';
+        lockBtn.className = 'share-btn';
+        lockBtn.innerHTML = '<i class="fas fa-lock"></i>';
+        lockBtn.title = 'Bloquear Tela';
+        lockBtn.style.position = 'fixed';
+        lockBtn.style.top = '20px';
+        lockBtn.style.right = '20px';
+        lockBtn.style.zIndex = '1000';
+        DOM.container.appendChild(lockBtn);
+        DOM.lockBtn = lockBtn;
+        DOM.lockBtn.addEventListener('click', toggleLockScreen);
     }
-  });
-});
-// === Fim da Tela de Bloqueio ===
+};
 
+document.addEventListener("DOMContentLoaded", () => {
+    // Sempre bloquear ao carregar a página
+    DOM.lockScreen.classList.add('active');
+    DOM.lockPassword.focus();
+    localStorage.setItem('isUnlocked', 'false');
+
+    DOM.lockForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const valor = DOM.lockPassword.value.trim();
+        const senhaCorreta = "123456";
+
+        if (valor === senhaCorreta) {
+            DOM.lockScreen.classList.remove('active');
+            localStorage.setItem('isUnlocked', 'true');
+            showToast("Acesso liberado!");
+            addLockButton(); // Adicionar botão de bloqueio após desbloquear
+        } else {
+            DOM.lockPassword.classList.add('shake');
+            DOM.lockPassword.addEventListener('animationend', () => {
+                DOM.lockPassword.classList.remove('shake');
+            }, { once: true });
+            showToast("Senha incorreta.");
+            DOM.lockPassword.value = '';
+            DOM.lockPassword.focus();
+        }
+    });
+
+    DOM.popup.querySelector('.close-btn').addEventListener('click', closePopup);
+
+    updateClock();
+    setInterval(updateClock, 1000);
+    setTimeout(carregarComandas, 100);
+});
+
+// Inicialização
+DOM.addComanda.addEventListener('click', addNewComanda);

@@ -113,7 +113,7 @@ body.dark-mode {
 }
 
 .topbar button {
-    padding: 4px 8px 4px 8px;
+    padding: 4px 8px;
     font-weight: 600;
     border: none;
     background-color: #ffffff;
@@ -128,7 +128,7 @@ body.dark-mode {
 
 .topbar button:hover {
     background-color: #8e0000;
-    color: #ffffff
+    color: #ffffff;
 }
 
 .container {
@@ -379,7 +379,7 @@ input[type="number"] {
     color: var(--text);
 }
 
-.expand-btn, .popup-btn {
+.expand-btn, .popup-btn, .share-btn {
     background: linear-gradient(135deg, #d32f2f, #b71c1c);
     color: white;
     border: none;
@@ -399,21 +399,51 @@ input[type="number"] {
     touch-action: manipulation;
 }
 
-.expand-btn:hover, .popup-btn:hover {
+.share-download-btn, .share-whatsapp-btn {
+    background: linear-gradient(135deg, #d32f2f, #b71c1c);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Roboto', sans-serif;
+    font-size: 15px;
+    box-shadow: 0 2px 5px var(--shadow-color);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.share-download-btn::before {
+    content: '\f019';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    margin-right: 8px;
+}
+
+.share-whatsapp-btn::before {
+    content: '\f232';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    margin-right: 8px;
+}
+
+.expand-btn:hover, .popup-btn:hover, .share-btn:hover, .share-download-btn:hover, .share-whatsapp-btn:hover {
     transform: translateY(-1px);
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
 }
 
-.expand-btn:active, .popup-btn:active {
+.expand-btn:active, .popup-btn:active, .share-btn:active, .share-download-btn:active, .share-whatsapp-btn:active {
     transform: scale(0.95);
 }
 
-.expand-btn i, .popup-btn i {
+.expand-btn i, .popup-btn i, .share-btn i, .share-download-btn i, .share-whatsapp-btn i {
     margin: 0;
     font-size: 1rem;
 }
 
-.popup-btn.hidden {
+.popup-btn.hidden, .share-btn.hidden {
     display: none;
 }
 
@@ -586,9 +616,8 @@ input[type="number"] {
     padding: 10px;
     text-align: left;
     border-bottom: 1px solid var(--border-color);
-    color: var(--text);
-    background: linear-gradient(135deg, #a04646);
     color: white;
+    background: linear-gradient(135deg, #a04646);
     font-weight: 400;
     letter-spacing: 0.05em;
 }
@@ -621,41 +650,6 @@ input[type="number"] {
     border-radius: 8px;
     box-shadow: 0 3px 8px var(--shadow-color);
     display: block;
-}
-
-.share-btn {
-    background: linear-gradient(135deg, #25D366, #128C7E);
-    color: white;
-    border: none;
-    padding: 8px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    box-shadow: 0 2px 5px var(--shadow-color);
-    transition: transform 0.2s, box-shadow 0.2s;
-    align-self: flex-end;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    min-width: 44px;
-    min-height: 44px;
-    touch-action: manipulation;
-}
-
-.share-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-}
-
-.share-btn:active {
-    transform: scale(0.95);
-}
-
-.share-btn i {
-    margin: 0;
-    font-size: 1rem;
 }
 
 .popup-add-comanda {
@@ -982,58 +976,21 @@ input[type="number"] {
     animation: pulse 1.5s infinite;
 }
 
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}
+
+.lock-content .submit-btn.shake {
+    animation: shake 0.3s ease-in-out;
+}
+
 @media (max-width: 600px) {
     body {
         font-size: 14px;
-    }
-    .sidebar {
-        position: fixed;
-        top: 0;
-        left: -100%;
-        width: 80%;
-        height: 100%;
-        padding: 15px;
-        border-bottom: none;
-        box-shadow: none;
-        transition: left 0.3s;
-        z-index: 2000;
-    }
-    .sidebar.active {
-        left: 0;
-    }
-    .sidebar-toggle {
-        display: block;
-        position: fixed;
-        top: 10px;
-        left: 10px;
-        background: linear-gradient(135deg, #d32f2f, #b71c1c);
-        color: white;
-        border: none;
-        padding: 10px;
-        border-radius: 6px;
-        cursor: pointer;
-        z-index: 2100;
-        min-width: 44px;
-        min-height: 44px;
-        touch-action: manipulation;
-    }
-    .header, .container {
-        width: 100%;
-        margin-left: 0;
-        margin-right: 0;
-        padding: 10px;
-    }
-    .header {
-        margin-top: 10px;
-        flex-direction: column;
-        gap: 10px;
-    }
-    .title {
-        font-size: 28px;
-        text-align: center;
-    }
-    .logo {
-        width: 40px;
     }
     .container {
         margin-top: 20px;
@@ -1101,6 +1058,11 @@ input[type="number"] {
         height: 32px;
         font-size: 0.8rem;
     }
+    .share-download-btn, .share-whatsapp-btn {
+        width: auto;
+        padding: 10px 20px;
+        font-size: 14px;
+    }
     .remove-btn {
         width: 16px;
         height: 16px;
@@ -1152,8 +1114,8 @@ input[type="number"] {
         padding: 6px;
     }
     .clock, .total-debt {
-        font-size: 1.5rem;
-        margin: -70px 0 0 25px;
+        font-size: 1.2rem;
+        margin: 0;
     }
     .lock-popup {
         width: 90%;
@@ -1184,16 +1146,7 @@ input[type="number"] {
 }
 
 @keyframes pulse {
-    0% {
-        transform: scale(1);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    }
-    50% {
-        transform: scale(1.03);
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
-    }
-    100% {
-        transform: scale(1);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    }
+    0% { transform: scale(1); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); }
+    50% { transform: scale(1.03); box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); }
+    100% { transform: scale(1); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); }
 }
