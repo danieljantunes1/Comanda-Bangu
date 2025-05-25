@@ -632,22 +632,7 @@ const toggleLockScreen = () => {
 };
 
 // Adicionar Botão de Bloqueio Dinamicamente
-const addLockButton = () => {
-    if (!DOM.lockBtn) {
-        const lockBtn = document.createElement('button');
-        lockBtn.id = 'lockBtn';
-        lockBtn.className = 'share-btn';
-        lockBtn.innerHTML = '<i class="fas fa-lock"></i>';
-        lockBtn.title = 'Bloquear Tela';
-        lockBtn.style.position = 'fixed';
-        lockBtn.style.top = '20px';
-        lockBtn.style.right = '20px';
-        lockBtn.style.zIndex = '1000';
-        DOM.container.appendChild(lockBtn);
-        DOM.lockBtn = lockBtn;
-        DOM.lockBtn.addEventListener('click', toggleLockScreen);
-    }
-};
+
 
 document.addEventListener("DOMContentLoaded", () => {
     // Sempre bloquear ao carregar a página
