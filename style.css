@@ -496,21 +496,20 @@ input[type="number"] {
 
 .popup {
     background: var(--comanda-bg);
-    padding: 20px;
+    padding: 15px;
     border-radius: 15px;
     box-shadow: 0 5px 25px var(--shadow-color);
     width: 500px;
-    max-width: 90vw;
-    max-height: 80vh;
+    max-width: 95vw;
+    max-height: 70vh;
     overflow-y: auto;
+    overflow-x: hidden;
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 12px;
     transform: scale(0.95);
     opacity: 0;
-    transition: transform 0.2s ease, opacity 0.2s ease;
-    border: 1px solid var(--border-color);
     animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
@@ -535,14 +534,13 @@ input[type="number"] {
     align-items: center;
     justify-content: space-between;
     font-family: 'Poppins', sans-serif;
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 600;
     color: white;
-    padding: 12px 15px;
-    background: linear-gradient(135deg, #a04646);
+    padding: 10px 12px;
+    background: linear-gradient(135deg, #a04646, #b71c1c);
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .popup-header span {
@@ -553,22 +551,19 @@ input[type="number"] {
 
 .popup-header .name-container {
     position: relative;
-    max-width: 220px;
+    max-width: 180px;
     flex-grow: 1;
-    margin-left: 20px;
+    margin-left: 15px;
 }
 
 .popup-header input[type="text"] {
-    padding: 8px 8px 8px 30px;
+    padding: 6px 6px 6px 25px;
     border: 2px solid transparent;
     border-radius: 8px;
-    font-size: 14px;
+    font-size: 12px;
     background: var(--input-bg);
     color: var(--text);
     width: 100%;
-    box-sizing: border-box;
-    transition: border 0.3s, box-shadow 0.3s;
-    border-image: linear-gradient(to right, #ffffff, transparent) 1;
 }
 
 .popup-header .name-container::before {
@@ -576,11 +571,11 @@ input[type="number"] {
     font-family: 'Font Awesome 5 Free';
     font-weight: 900;
     position: absolute;
-    left: 8px;
+    left: 6px;
     top: 50%;
     transform: translateY(-50%);
     color: #d32f2f;
-    font-size: 14px;
+    font-size: 12px;
 }
 
 .close-btn {
@@ -655,22 +650,24 @@ input[type="number"] {
 .popup-add-comanda {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    padding: 15px;
+    gap: 12px;
+    padding: 12px;
 }
 
 .popup-add-comanda table {
     width: 100%;
     max-width: 100%;
     border-collapse: collapse;
-    font-size: 14px;
+    font-size: 12px;
     background: var(--comanda-bg);
     border-radius: 10px;
     box-shadow: 0 4px 12px var(--shadow-color);
-    max-height: 280px;
+    max-height: 220px;
     overflow-y: auto;
+    overflow-x: hidden;
     scrollbar-width: thin;
     scrollbar-color: #d32f2f var(--background);
+    box-sizing: border-box;
 }
 
 .popup-add-comanda table::-webkit-scrollbar {
@@ -692,16 +689,18 @@ input[type="number"] {
 
 .popup-add-comanda th,
 .popup-add-comanda td {
-    padding: 10px;
+    padding: 5px;
     border-bottom: 1px solid var(--border-color);
     color: var(--text);
+    box-sizing: border-box;
 }
 
 .popup-add-comanda th:first-child,
 .popup-add-comanda td:first-child {
     text-align: left;
     width: 70%;
-    white-space: nowrap;
+    white-space: normal;
+    word-break: break-word;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -713,7 +712,7 @@ input[type="number"] {
 }
 
 .popup-add-comanda th {
-    background: linear-gradient(135deg, #a04646);
+    background: linear-gradient(135deg, #a04646, #b71c1c);
     color: white;
     font-weight: 400;
     letter-spacing: 0.05em;
@@ -724,9 +723,9 @@ input[type="number"] {
 .popup-add-comanda td:first-child::before {
     font-family: 'Font Awesome 5 Free';
     font-weight: 900;
-    margin-right: 8px;
+    margin-right: 2px;
     color: #d32f2f;
-    font-size: 16px;
+    font-size: 10px;
     transition: transform 0.2s;
 }
 
@@ -738,22 +737,21 @@ input[type="number"] {
 .popup-add-comanda td:first-child:nth-child(1):nth-of-type(2)::before { content: '\f0fc'; }
 .popup-add-comanda td:first-child:nth-child(1):nth-of-type(3)::before { content: '\f0fc'; }
 .popup-add-comanda td:first-child:nth-child(1):nth-of-type(4)::before { content: '\f4c0'; }
-.popup-add-comanda td:first-child:nth-child(1):nth-of-type(5)::before { content: '\f2e9'; }
-.popup-add-comanda td:first-child:nth-child(1):nth-of-type(6)::before { content: '\f2e9'; }
-.popup-add-comanda td:first-child:nth-child(1):nth-of-type(7)::before { content: '\f2e9'; }
-.popup-add-comanda td:first-child:nth-child(1):nth-of-type(8)::before { content: '\f0f5'; }
-.popup-add-comanda td:first-child:nth-child(1):nth-of-type(9)::before { content: '\f805'; }
+.popup-add-comanda td:first-child:nth-child(1):nth-of-type(5)::before { content: '\f222'; }
+.popup-add-comanda td:first-child:nth-child(6)::before { content: '\f2e9'; }
+.popup-add-comanda td:first-child:nth-child(7)::before { content: '\f2e9'; }
+.popup-add-comanda td:first-child:nth-child(8)::before { content: '\f0f5'; }
+.popup-add-comanda td:first-child:nth-child(9)::before { content: '\f805'; }
 
 .popup-add-comanda input[type="number"] {
-    width: 60px;
-    padding: 8px;
+    width: 40px;
+    padding: 5px;
     text-align: center;
     border: 1px solid var(--border-color);
     border-radius: 6px;
-    font-size: 14px;
+    font-size: 12px;
     background: var(--input-bg);
     color: var(--text);
-    transition: border-color 0.2s;
 }
 
 .popup-add-comanda input[type="number"]:focus {
@@ -774,19 +772,13 @@ input[type="number"] {
 
 .popup-add-comanda .submit-btn,
 .popup-add-comanda .cancel-btn {
-    padding: 12px 24px;
+    padding: 10px 20px;
     border-radius: 8px;
     font-family: 'Roboto', sans-serif;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 500;
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
-    min-width: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    position: relative;
 }
 
 .popup-add-comanda .submit-btn {
@@ -828,7 +820,7 @@ input[type="number"] {
     content: '\f00d';
     font-family: 'Font Awesome 5 Free';
     font-weight: 900;
-    font-size: 16px;
+    font-size: 14px;
     margin-right: 8px;
 }
 
@@ -872,7 +864,6 @@ input[type="number"] {
     flex-direction: column;
     gap: 15px;
     transform: scale(0.95);
-    opacity: 0;
     transition: transform 0.2s ease, opacity 0.2s ease;
     border: 1px solid var(--border-color);
     animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
@@ -988,6 +979,56 @@ input[type="number"] {
     animation: shake 0.3s ease-in-out;
 }
 
+@media (max-width: 1200px) {
+    :root {
+        --base-font-size: 14px;
+    }
+    .topbar {
+        height: 60px;
+        padding: 0 15px;
+    }
+    .logo-topbar {
+        height: 100px;
+        top: 30px;
+        margin-left: 40px;
+    }
+    .title-topbar {
+        font-size: 2.2rem;
+    }
+    .clock, .total-debt {
+        font-size: 1.2rem;
+    }
+    .topbar button {
+        font-size: 1.2rem;
+        padding: 4px 6px;
+    }
+    .comanda {
+        width: calc(33.33% - 20px);
+        height: 500px;
+    }
+    .comanda.expanded {
+        height: auto;
+    }
+    .comanda-header label {
+        font-size: 18px;
+    }
+    .comanda-header input {
+        font-size: 14px;
+    }
+    th, td {
+        font-size: 14px;
+        padding: 4px;
+    }
+    .expand-btn, .share-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 0.9rem;
+    }
+    .total {
+        font-size: 14px;
+    }
+}
+
 @media (max-width: 600px) {
     body {
         font-size: 14px;
@@ -1072,18 +1113,34 @@ input[type="number"] {
         min-height: 32px;
     }
     .popup {
-        width: 95%;
-        padding: 15px;
-        max-height: 90vh;
+        width: 90%;
+        max-width: 95vw;
+        padding: 10px;
+        max-height: 85vh;
+        overflow-x: hidden;
     }
     .popup-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
+        font-size: 18px;
+        padding: 8px 10px;
     }
     .popup-header .name-container {
         max-width: 100%;
         margin-left: 0;
+    }
+    .popup-header input[type="text"] {
+        font-size: 11px;
+        padding: 5px 5px 5px 20px;
+    }
+    .popup-header .name-container::before {
+        left: 5px;
+        font-size: 11px;
+    }
+    .popup-add-comanda {
+        gap: 10px;
+        padding: 10px;
     }
     .popup-add-comanda .buttons {
         flex-direction: column;
@@ -1092,7 +1149,8 @@ input[type="number"] {
     .popup-add-comanda .submit-btn,
     .popup-add-comanda .cancel-btn {
         min-width: auto;
-        padding: 12px 20px;
+        padding: 8px 16px;
+        font-size: 13px;
     }
     .popup-table {
         font-size: 12px;
@@ -1104,14 +1162,19 @@ input[type="number"] {
         font-size: 14px;
     }
     .popup-add-comanda table {
-        font-size: 12px;
+        font-size: 10px;
     }
     .popup-add-comanda th, .popup-add-comanda td {
-        padding: 8px;
+        padding: 4px;
     }
     .popup-add-comanda input[type="number"] {
-        width: 50px;
-        padding: 6px;
+        width: 35px;
+        padding: 4px;
+        font-size: 10px;
+    }
+    .popup-add-comanda td:first-child::before {
+        margin-right: 1px;
+        font-size: 8px;
     }
     .clock, .total-debt {
         font-size: 1.2rem;
@@ -1149,98 +1212,4 @@ input[type="number"] {
     0% { transform: scale(1); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); }
     50% { transform: scale(1.03); box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); }
     100% { transform: scale(1); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); }
-}
-
-@media (max-width: 1366px) {
-    :root {
-        --base-font-size: 14px;
-    }
-
-    .topbar {
-        height: 60px;
-        padding: 0 10px;
-    }
-
-    .logo-topbar {
-        height: 100px;
-        top: 30px;
-        margin-left: 40px;
-    }
-
-    .title-topbar {
-        font-size: 2.2rem;
-    }
-
-    .clock, .total-debt {
-        font-size: 1.2rem;
-    }
-
-    .comanda {
-        width: calc(33.33% - 20px);
-        height: 500px;
-    }
-
-    .comanda.expanded {
-        height: auto;
-    }
-
-     :root {
-        --base-font-size: 14px;
-    }
-
-    .topbar {
-        height: 60px;
-        padding: 0 15px;
-    }
-
-    .logo-topbar {
-        height: 100px;
-        top: 30px;
-        margin-left: 40px;
-    }
-
-    .title-topbar {
-        font-size: 2.2rem;
-    }
-
-    .clock, .total-debt {
-        font-size: 1.2rem;
-    }
-
-    .topbar button {
-        font-size: 1.2rem;
-        padding: 4px 6px;
-    }
-
-    .comanda {
-        width: calc(33.33% - 20px);
-        height: 480px;
-    }
-
-    .comanda.expanded {
-        height: auto;
-    }
-
-    .comanda-header label {
-        font-size: 18px;
-    }
-
-    .comanda-header input {
-        font-size: 14px;
-    }
-
-    th, td {
-        font-size: 14px;
-        padding: 4px;
-    }
-
-    .expand-btn, .share-btn {
-        width: 36px;
-        height: 36px;
-        font-size: 0.9rem;
-    }
-
-    .total {
-        font-size: 14px;
-    }
 }
