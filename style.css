@@ -1150,3 +1150,37 @@ input[type="number"] {
     50% { transform: scale(1.03); box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); }
     100% { transform: scale(1); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); }
 }
+
+@media (max-width: 1366px) {
+    :root {
+        --base-font-size: 14px;
+    }
+
+    .topbar {
+        height: 60px;
+        padding: 0 10px;
+    }
+
+    .logo-topbar {
+        height: 100px;
+        top: 30px;
+        margin-left: 40px;
+    }
+
+    .title-topbar {
+        font-size: 2.2rem;
+    }
+
+    .clock, .total-debt {
+        font-size: 1.2rem;
+    }
+
+    .comanda {
+        width: calc(33.33% - 20px);
+        height: 500px;
+    }
+
+    .comanda.expanded {
+        height: auto;
+    }
+}
