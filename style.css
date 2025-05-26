@@ -1183,4 +1183,64 @@ input[type="number"] {
     .comanda.expanded {
         height: auto;
     }
+
+     :root {
+        --base-font-size: 14px;
+    }
+
+    .topbar {
+        height: 60px;
+        padding: 0 15px;
+    }
+
+    .logo-topbar {
+        height: 100px;
+        top: 30px;
+        margin-left: 40px;
+    }
+
+    .title-topbar {
+        font-size: 2.2rem;
+    }
+
+    .clock, .total-debt {
+        font-size: 1.2rem;
+    }
+
+    .topbar button {
+        font-size: 1.2rem;
+        padding: 4px 6px;
+    }
+
+    .comanda {
+        width: calc(33.33% - 20px);
+        height: 480px;
+    }
+
+    .comanda.expanded {
+        height: auto;
+    }
+
+    .comanda-header label {
+        font-size: 18px;
+    }
+
+    .comanda-header input {
+        font-size: 14px;
+    }
+
+    th, td {
+        font-size: 14px;
+        padding: 4px;
+    }
+
+    .expand-btn, .share-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 0.9rem;
+    }
+
+    .total {
+        font-size: 14px;
+    }
 }
