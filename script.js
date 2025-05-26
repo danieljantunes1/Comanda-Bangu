@@ -400,11 +400,11 @@ const createComanda = (id, nome = '', quantidades = [], desconto = 0, taxa = 0) 
         </table>
         <div class="cash-input-container" style="display: flex; justify-content: space-between; margin-bottom: 10px;">
             <div style="display: flex; align-items: center; gap: 10px;">
-                <label for="taxa-${id}" style="font-size: 14px;">Taxa (R$):</label>
+                <label for="taxa-${id}" style="font-size: 14px;">Taxa:</label>
                 <input type="number" id="taxa-${id}" step="0.01" min="0" value="${taxa}">
             </div>
             <div style="display: flex; align-items: center; gap: 10px;">
-                <label for="desconto-${id}" style="font-size: 14px;">Desconto (R$):</label>
+                <label for="desconto-${id}" style="font-size: 14px;">Desconto:</label>
                 <input type="number" id="desconto-${id}" step="0.01" min="0" value="${desconto}">
             </div>
         </div>
