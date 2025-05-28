@@ -63,7 +63,32 @@
 
     <div id="toast" class="toast"></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="script.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- Firebase -->
+<script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+    import { getDatabase, ref, set, onValue } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js';
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyA5SPx1l6k7brPFi4fY8ig1PkGWXSlxYBk",
+        authDomain: "boteco-do-ze-8f058.firebaseapp.com",
+        databaseURL: "https://boteco-do-ze-8f058-default-rtdb.firebaseio.com",
+        projectId: "boteco-do-ze-8f058",
+        storageBucket: "boteco-do-ze-8f058.firebasestorage.app",
+        messagingSenderId: "335232045249",
+        appId: "1:335232045249:web:1471b08f073ce450600440",
+        measurementId: "G-JRBS0ECQC5"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    window.database = database;
+    window.ref = ref;
+    window.set = set;
+    window.onValue = onValue;
+</script>
+
+    <script type="module" src="script.js"></script>
 </body>
 </html>

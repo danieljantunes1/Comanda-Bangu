@@ -10,6 +10,12 @@ let produtos = JSON.parse(localStorage.getItem('produtos')) || [
     { nome: 'Batata (300g)', preco: 15, icon: 'fas fa-bacon' }
 ];
 
+// Adicionando variáveis do Firebase
+const database = window.database;
+const ref = window.ref;
+const set = window.set;
+const onValue = window.onValue;
+
 const DOM = {
     clock: document.getElementById('clock'),
     totalDebt: document.getElementById('totalDebt'),
@@ -34,9 +40,11 @@ const formatCurrency = value => value.toLocaleString('pt-BR', { style: 'currency
 
 const updateClock = () => DOM.clock.innerText = new Date().toLocaleTimeString('pt-BR', { hour12: false });
 
-const showToast = (message) => {
+const showToast = (message, isError = false) => {
     DOM.toast.innerText = message;
     DOM.toast.classList.add('show');
+    if (isError) DOM.toast.classList.add('error');
+    else DOM.toast.classList.remove('error');
     setTimeout(() => DOM.toast.classList.remove('show'), 2000);
 };
 
@@ -72,10 +80,18 @@ const salvarComandas = () => {
     });
     try {
         localStorage.setItem('comandas', JSON.stringify(comandas));
+        set(ref(database, 'comandas'), comandas)
+            .then(() => {
+                console.log('Comandas salvas no Firebase com sucesso.');
+            })
+            .catch(error => {
+                console.error('Erro ao salvar no Firebase:', error);
+                showToast('Erro ao sincronizar comandas. Usando armazenamento local.', true);
+            });
         console.log('Comandas salvas:', comandas);
     } catch (error) {
         console.error('Erro ao salvar comandas:', error);
-        showToast('Erro ao salvar comandas.');
+        showToast('Erro ao salvar comandas.', true);
     }
 };
 
@@ -521,49 +537,91 @@ const reorganizarComandas = () => {
 };
 
 const carregarComandas = () => {
-    let saved = {};
-    try {
-        const stored = localStorage.getItem('comandas');
-        if (stored) {
-            saved = JSON.parse(stored);
-            console.log('Comandas carregadas:', saved);
+    onValue(ref(database, 'comandas'), snapshot => {
+        const saved = snapshot.val() || {};
+        localStorage.setItem('comandas', JSON.stringify(saved));
+        DOM.openComandas.innerHTML = '';
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const comanda = entry.target;
+                    comanda.style.opacity = 1;
+                    observer.unobserve(comanda);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        if (saved && typeof saved === 'object') {
+            Object.entries(saved).forEach(([id, data]) => {
+                try {
+                    const quantidades = Array.isArray(data.quantidades) ? data.quantidades : new Array(produtos.length).fill(0);
+                    const comanda = createComanda(id, data.nome || '', quantidades, data.desconto || 0, data.taxa || 0);
+                    comanda.style.opacity = 0;
+                    const todasComandas = DOM.openComandas.querySelectorAll('.comanda').length;
+                    const rowIndex = Math.floor(todasComandas / 4);
+                    const row = getOrCreateRow(rowIndex, DOM.openComandas);
+                    row.appendChild(comanda);
+                    if (data.expanded) toggleExpand(id);
+                    observer.observe(comanda);
+                } catch (error) {
+                    console.error(`Erro ao criar comanda ${id}:`, error);
+                }
+            });
         }
-    } catch (error) {
-        console.error('Erro ao carregar comandas:', error);
-        showToast('Erro ao carregar comandas. Iniciando com lista vazia.');
-        localStorage.setItem('comandas', JSON.stringify({}));
-    }
 
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const comanda = entry.target;
-                comanda.style.opacity = 1;
-                observer.unobserve(comanda);
+        DOM.emptyMessage.style.display = Object.keys(saved).length === 0 ? 'block' : 'none';
+        updateTotalDebt();
+    }, error => {
+        console.error('Erro ao carregar do Firebase:', error);
+        showToast('Sem conexão com o servidor. Usando dados locais.', true);
+
+        let saved = {};
+        try {
+            const stored = localStorage.getItem('comandas');
+            if (stored) {
+                saved = JSON.parse(stored);
+                console.log('Comandas carregadas do localStorage:', saved);
             }
-        });
-    }, { threshold: 0.1 });
+        } catch (error) {
+            console.error('Erro ao carregar comandas do localStorage:', error);
+            showToast('Erro ao carregar comandas. Iniciando com lista vazia.', true);
+            localStorage.setItem('comandas', JSON.stringify({}));
+        }
 
-    if (saved && typeof saved === 'object') {
-        Object.entries(saved).forEach(([id, data]) => {
-            try {
-                const quantidades = Array.isArray(data.quantidades) ? data.quantidades : new Array(produtos.length).fill(0);
-                const comanda = createComanda(id, data.nome || '', quantidades, data.desconto || 0, data.taxa || 0);
-                comanda.style.opacity = 0;
-                const todasComandas = DOM.openComandas.querySelectorAll('.comanda').length;
-                const rowIndex = Math.floor(todasComandas / 4);
-                const row = getOrCreateRow(rowIndex, DOM.openComandas);
-                row.appendChild(comanda);
-                if (data.expanded) toggleExpand(id);
-                observer.observe(comanda);
-            } catch (error) {
-                console.error(`Erro ao criar comanda ${id}:`, error);
-            }
-        });
-    }
+        DOM.openComandas.innerHTML = '';
 
-    DOM.emptyMessage.style.display = Object.keys(saved).length === 0 ? 'block' : 'none';
-    updateTotalDebt();
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const comanda = entry.target;
+                    comanda.style.opacity = 1;
+                    observer.unobserve(comanda);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        if (saved && typeof saved === 'object') {
+            Object.entries(saved).forEach(([id, data]) => {
+                try {
+                    const quantidades = Array.isArray(data.quantidades) ? data.quantidades : new Array(produtos.length).fill(0);
+                    const comanda = createComanda(id, data.nome || '', quantidades, data.desconto || 0, data.taxa || 0);
+                    comanda.style.opacity = 0;
+                    const todasComandas = DOM.openComandas.querySelectorAll('.comanda').length;
+                    const rowIndex = Math.floor(todasComandas / 4);
+                    const row = getOrCreateRow(rowIndex, DOM.openComandas);
+                    row.appendChild(comanda);
+                    if (data.expanded) toggleExpand(id);
+                    observer.observe(comanda);
+                } catch (error) {
+                    console.error(`Erro ao criar comanda ${id}:`, error);
+                }
+            });
+        }
+
+        DOM.emptyMessage.style.display = Object.keys(saved).length === 0 ? 'block' : 'none';
+        updateTotalDebt();
+    });
 };
 
 const addNewComanda = () => {
@@ -632,7 +690,15 @@ const toggleLockScreen = () => {
 };
 
 // Adicionar Botão de Bloqueio Dinamicamente
-
+const addLockButton = () => {
+    const lockBtn = document.createElement('button');
+    lockBtn.id = 'lockBtn';
+    lockBtn.className = 'lock-btn';
+    lockBtn.innerHTML = '<i class="fas fa-lock"></i>';
+    lockBtn.title = 'Bloquear Tela';
+    lockBtn.addEventListener('click', toggleLockScreen);
+    document.querySelector('.header').appendChild(lockBtn);
+};
 
 document.addEventListener("DOMContentLoaded", () => {
     // Sempre bloquear ao carregar a página
